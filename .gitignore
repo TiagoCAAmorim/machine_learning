@@ -160,3 +160,14 @@ cython_debug/
 #.idea/
 
 no_sync/
+**/.vscode/
+
+*.aux
+*.bbl
+*.log
+*.spl
+*.blg
+*.out
+*.gz
+texput.pdf
+*.*(busy)
