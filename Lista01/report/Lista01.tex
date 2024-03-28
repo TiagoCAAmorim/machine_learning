@@ -163,23 +163,23 @@
 %%             country={}}
 
 \author[label1]{Tiago C A Amorim (RA: 100675)}
-\affiliation[label1]{organization={Departamento de Engenharia de Petróleo da Faculdade de Engenharia Mecânica, UNICAMP},
+\affiliation[label1]{organization={Doutorando no Departamento de Engenharia de Petróleo da Faculdade de Engenharia Mecânica, UNICAMP},
             city={Campinas},
             state={SP},
             country={Brasil}}
 
-\author[label2]{Taylon Xxxxxxx (RA: xxxxxx)}
-\affiliation[label2]{organization={Departamento XXXX, UNICAMP},
+\author[label2]{Taylon L C Martins (RA: 177379)}
+\affiliation[label2]{organization={Aluno especial, UNICAMP},
             city={Campinas},
             state={SP},
             country={Brasil}}
 
 
-\begin{abstract}
+% \begin{abstract}
 
-    xxxxxxx
+%     xxxxxxx
 
-\end{abstract}
+% \end{abstract}
 
 
 %%Graphical abstract
@@ -209,6 +209,7 @@
 %% main text
 \section{Introdução}
 
+    Este relatório apresenta as principais atividades realizadas no desenvolvimento das atividades propostas na Lista 01 da disciplina IA048: Aprendizado de Máquina, primeiro semestre de 2024. O foco deste exercício é de realizar o ajuste de modelos lineares aos dados de uma série temporal.
 
 \section{Tarefa Proposta}
 
@@ -256,7 +257,7 @@
 
 \section{Aplicação}
 
-    Toda a avaliação foi feita em um único \emph{notebook} Jupyter, em Python. Foi feito o uso da biblioteca \emph{Scikit-learn} \cite{scikit-learn} para fazer as diferentes manipulações nos dados.
+    Toda a avaliação foi feita em um único \emph{notebook} Jupyter, em Python. Foi feito o uso da biblioteca \emph{Scikit-learn} \cite{scikit-learn} para fazer as diferentes manipulações nos dados. O código pode ser encontrado em \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista01/Lista01.ipynb}{https://github.com/Tiago CAAmorim/machine\_learning}.
 
     \subsection{Avaliação do Conjunto de Dados}
 
@@ -360,7 +361,7 @@
         \label{fig:folds}
     \end{figure}
 
-    \subsubsection{Modelos Simples}
+    \subsubsection{Modelos Simples} \label{sec:modelos_naive}
 
     Antes de seguir com o teste de diversos modelos lineares, foram propostos três modelos simples (\emph{naïve}):
     \begin{enumerate}
@@ -397,9 +398,9 @@
 
     \subsubsection{Busca pelo Melhor Modelo}
 
-    Em um primeiro momento foi definido utilizar um modelo linear regularizado do tipo \emph{Elastic-Net}. A busca pelo melhor modelo para cada valor de \textbf{K} foi feita com uma busca em grid por parâmetros ótimos de \textbf{alpha} e \textbf{l1\_ratio}. O parâmetro de busca do melhor modelo foi a média do RMSE.
+    Em um primeiro momento foi definido utilizar um modelo linear regularizado do tipo \emph{Elastic-Net}. A busca pelo melhor modelo para cada valor de \textbf{K} foi feita com uma busca em grade (\emph{grid search}) por parâmetros ótimos de \textbf{alpha} (entre $0.01$ e $1.0$) e \textbf{l1\_ratio} (entre $0.1$ e $0.9$). O parâmetro de busca do melhor modelo foi a média do RMSE.
 
-    Todos os 24 modelos encontrados utilizaram o menor valor de \emph{alpha} que fez parte da busca ($0.01$). Em face destes resultados a avaliação foi refeita utilizando um modelo linear simples (sem regularização). Como o novo modelo não tem parâmetros, não foi preciso realizar uma busca em grid, e foi testado apenas o valor de \textbf{K}.
+    Todos os 24 modelos encontrados utilizaram o menor valor de \emph{alpha} que fez parte da busca em grade ($0.01$). Em face destes resultados a avaliação foi refeita utilizando um modelo linear simples (sem regularização). Como o novo modelo não tem parâmetros, não foi preciso realizar uma busca em grid, e foi testado apenas o valor de \textbf{K}.
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{B1_LinearModels.png}
@@ -409,7 +410,7 @@
 
     O melhor resultado foi com \textbf{K} igual a 13 (validação cruzada com $\text{RMSE} = 534.25$ e $\text{MAPE} = 0.02$). Com o melhor valor de \textbf{K} definido, foi utilizado todo o conjunto de dados de treino+validação para ajustar os parâmetros do modelo escolhido.
 
-    Foi ajustado um segundo modelo com \textbf{K} igual a 13, mas sem normalizar as variáveis. Fica mais fácil analisar os valores dos coeficientes do modelo desta forma (figura \ref{fig:coef_modelo_linear}). O modelo linear pode ser interpretado como uma média ponderada dos valores nos meses anteriores, já que as variáveis e o valor de saída tem todos a mesma natureza. A soma dos coeficientes com o valor relativo da constante\footnote{Foi definido valor relativo da constante como a divisão do termo constante do modelo linear pela média dos valores de saída.} é próxima da unidade: $0.9687 + 0.0305 = 0.9992$.
+    Foi ajustado um segundo modelo com \textbf{K} igual a 13, mas sem normalizar as variáveis. Com este modelo fica mais fácil analisar os valores dos coeficientes do modelo (figura \ref{fig:coef_modelo_linear}). O modelo linear pode ser interpretado como uma média ponderada dos valores nos meses anteriores, já que as variáveis e o valor de saída tem todos a mesma natureza. A soma dos coeficientes com o valor relativo da constante\footnote{Foi definido valor relativo da constante como a divisão do termo constante do modelo linear pela média dos valores de saída.} é próxima da unidade: $0.9687 + 0.0305 = 0.9992$.
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{B1_CoefficientsNoScaling.png}
@@ -417,9 +418,9 @@
         \label{fig:coef_modelo_linear}
     \end{figure}
 
-    O gráfico com os valores dos coeficientes utilizados mostra que as variáveis de maior peso foram o passo de tempo anterior ($\textbf{x}_{\textbf{1}}$), um ano antes ($\textbf{x}_{\textbf{12}}$) e o anterior ($\textbf{x}_{\textbf{13}}$). Este resultado guarda certa correspondência com dois dos modelos naïve propostos.
+    O gráfico com os valores dos coeficientes utilizados mostra que as variáveis de maior peso foram o passo de tempo anterior ($\textbf{x}_{\textbf{1}}$), um ano antes ($\textbf{x}_{\textbf{12}}$) e o anterior ($\textbf{x}_{\textbf{13}}$). Este resultado guarda certa correspondência com dois dos modelos naïve propostos, dando maior peso ao valor anterior (tendência de curto prazo) e ao valor um ano atrás (efeito da sazonalidade).
 
-    \subsubsection{Erros com os Dados de Teste}
+    \subsubsection{Erros com os Dados de Teste} \label{sec:testes_modelo}
 
     O modelo construído teve um resultado ruim nos dados de teste, com $\text{RMSE} = 3187.39$ e $\text{MAPE} = 0.1126$. Na figura \ref{fig:melhor_modelo_teste} observa-se que o conjunto de teste (área em vermelho na figura) coincide com o período da pandemia e os meses posteriores. Por se tratar de um evento singular e que não apareceu nos dados de treino e validação, já era esperado que o modelo tivesse dificuldade em prever o comportamento da série temporal. O alto valor de RMSE associado ao conjunto de teste demonstra a dificuldade do modelo.
 
@@ -443,50 +444,84 @@
             \label{fig:erros_melhor_modelo}
         \end{figure}
 
-    \subsection{Segundo Modelo de Regressão}
+        \subsection{Segundo Modelo de Regressão}
 
+        Para o segundo modelo de regressão a proposta é utilizar outros intervalos para treino, validação e teste (figura \ref{fig:treino_teste_modelo_dois}). O intervalo de validação coincide com o período de maior restrição de deslocamento da pandemia de Covid-19. Dada a discrepância entre o comportamento da série temporal no período de treino e no de validação, é esperado que as variáveis que correspondem a dados mais recentes tenham maior peso. Adicionalmente, como o intervalo de validação está fixo, não será possível fazer validação cruzada.
 
-\section{Resultados}
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C1_TrainTest.png}
+            \caption{Série temporal com novos limites dos dados de treino, validação e teste.}
+            \label{fig:treino_teste_modelo_dois}
+        \end{figure}
 
+        Foram testados os mesmos modelos simples (\emph{naïve}) propostos anteriormente (em \ref{sec:modelos_naive}). O modelo de melhor resultado foi o que utiliza o valor do mês anterior para prever o próximo intervalo de tempo. Os resultados de RMSE foram $3304.75$, $11023.11$ e $17523.33$, para o primeiro, segundo e terceiro modelos \emph{naïve} propostos, respectivamente. Como o intervalo de validação corresponde a um perído de significativas variações na série temporal, os modelos que se baseiam em horizontes de tempo mais longo tem mais dificuldade de prever este comportamento.
 
-        O código foi implementado em Python em um \emph{notebook} Jupyter. Pode ser encontrado em \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista01/Lista01.ipynb}{https://github.com/Tiago CAAmorim/machine\_learning}.
+        O mesmo comportamento observado entre os modelos \emph{naïve} apareceu na seleção de modelos em função da quantidade de passos de tempo passados (figura \ref{fig:modelos_lineares_novo}). Os modelos que se restringem a dados de passos de tempo mais recentes apresentaram melhores resultados. Este resultado é devido ao conjunto de dados de validação utilizado. O melhor modelo é o que se baseia apenas nos dois passos de tempo anteriores, e com maior impacto do passo de tempo imediatamente anterior.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C1_LinearModels.png}
+            \caption{RMSE dos diferentes modelos testados com o novo conjunto de dados.}
+            \label{fig:modelos_lineares_novo}
+        \end{figure}
+
+        Foi aplicado o mesmo processo de reconstruir o modelo com $\textbf{K} = 2$ em todo o conjunto de treino+validação. Também foi construido uma versão deste modelo sem normalizar as variáveis do problema, de forma a melhor analisar os seus coeficientes (figura \ref{fig:coeficientes_novo}). Fica claro que o modelo é próximo do modelo \emph{naïve}, com um peso grande do valor imediatamente anterior, acrescido de um uma \emph{correção} do valor dois meses atrás. Novamente o modelo pode ser interpretado como um média ponderada, a soma dos coeficientes com o valor relativo da constante é aproximadamente a unidade: $ 0.9211 + 0.0778 = 0.9989$. Como esperado, este novo modelo apresenta um comportamento mais próximo dos dados originais no período da pandemia (figura \ref{fig:ajuste_novo}).
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C1_CoefficientsNoScaling.png}
+            \caption{Coeficientes do novo melhor modelo linear ($\textbf{K} = 2$).}
+            \label{fig:coeficientes_novo}
+        \end{figure}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C2_BestModelFit.png}
+            \caption{Ajuste do novo melhor modelo linear ($\textbf{K} = 2$).}
+            \label{fig:ajuste_novo}
+        \end{figure}
+
+        Os dados de teste deste novo modelo correspondem aos anos de 2022 e 2023, avaliados com o primeiro modelo em \ref{sec:testes_modelo}. Para os dados de teste temos para este novo modelo $\text{RMSE} = 590.57$ e $\text{MAPE} = 0.0208$. Para os anos de 2022 e 2023 os dois modelos construídos mostraram resultados próximos (figuras \ref{fig:erros_modelos} e \ref{fig:ajuste_modelos}).
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C3_RMSE.png}
+            \caption{Erros para os dois modelos construídos.}
+            \label{fig:erros_modelos}
+        \end{figure}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C3_BestModel22_23.png}
+            \caption{Ajuste em 2022 e 2023 dos dois modelos construídos.}
+            \label{fig:ajuste_modelos}
+        \end{figure}
+
+        \subsection{Extrapolação Recursiva}
+
+        Foi feita uma extrapolação recursiva de 36 meses a partir do último valor do período de validação com ambos modelos. O primeiro modelo utiliza 13 valores prévios, de modo que apresenta um comportamento mais estável nesta previsão recursiva (figura \ref{fig:extrapolacao_primeiro_modelo}). Depois de cerca de um ano o primeiro modelo também começa a apresentar um comportamento errático, o que coincide com o passo de tempo em que realiza previsões baseadas apena em dados estimados pelo próprio modelo.
+
+        Observa-se que o segundo modelo, que se baseia unicamente nos dois valores mais recentes, rapidamente perde a capacidade de realizar qualquer previsão confiável (figura \ref{fig:extrapolacao_segundo_modelo}). É necessário realizar uma ajuste específico para valores de L maiores que um para conseguir previsões confiáveis.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C3_RecursiveExtrapolation.png}
+            \caption{Extrapolação recursiva com o primeiro modelo.}
+            \label{fig:extrapolacao_primeiro_modelo}
+        \end{figure}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C3_RecursiveExtrapolation_new.png}
+            \caption{Extrapolação recursiva com o segundo modelo.}
+            \label{fig:extrapolacao_segundo_modelo}
+        \end{figure}
+
 
 \section{Conclusão}
 
+    A definição dos períodos de treino e validação tiveram impacto no número de parâmetros de cada modelo. Ambos modelos dependem muito do valor do mês anterior para estimar o próximo, sendo incapazes de responder adequadamente a eventos com variações abruptas. Variáveis adicionais seriam necessárias para permitir que os modelos lineares conseguissem aproximar melhor eventos como as restrições impostas pela Pandemia de Covid-19.
 
-    % \label{}
-
-%% The Appendices part is started with the command \appendix;
-%% appendix sections are then done as normal sections
 
 \appendix
 
-\section{Lista de Variáveis}
+% \section{Lista de Variáveis}
 
     % \begin{description}
-    %     \item[$Bo$:]Fator volume de formação do óleo no reservatório ($m^3/m^3$).
-    %     \item[$Bw$:]Fator volume de formação da água no reservatório ($m^3/m^3$).
-    %     \item[$D$:]Profundidade.
-    %     \item[$\Delta x$:]Discretização espacial na direção $i$.
-    %     \item[$\Delta y$:]Discretização espacial na direção $j$.
-    %     \item[$\Delta z$:]Discretização espacial na direção $k$.
-    %     \item[$\Delta t$:]Discretização temporal.
-    %     \item[$\gamma_p$:]Peso específico da fase $p$ ($\gamma_p = \rho_p g$).
-    %     \item[$k$:]Permeabilidade absoluta do meio poroso.
-    %     \item[$k_{rp}$:]Permeabilidade relativa da fase $p$.
-    %     \item[$\mu_p$:]Viscosidade da fase $p$.
-    %     \item[$n_i$:]Número de células na direção $i$.
-    %     \item[$n_j$:]Número de células na direção $j$.
-    %     \item[$p$:]Pressão.
-    %     \item[$p_{wf}$:]Pressão de fundo do poço.
-    %     \item[$\phi$:]Porosidade da rocha.
-    %     \item[$q_p$:]Vazão volumétrica da fase $p$.
-    %     \item[$q^{std}_{p}$:]Vazão volumétrica da fase $p$ medida em condições padrão (\emph{standard}).
-    %     \item[$\rho_p$:]Densidade da fase $p$.
-    %     \item[$r_w$:]Raio do poço.
-    %     \item[$S_p$:]Saturação da fase $p$ no meio poroso.
-    %     \item[$Swi$:]Saturação de água inicial (imóvel).
-    %     \item[$Sor$:]Saturação de óleo residual (imóvel).
+    %     \item[$X$:] xxxxxxxxxxx.
     % \end{description}
 
 
