@@ -209,7 +209,7 @@
 %% main text
 \section{Introdução}
 
-    Este relatório apresenta as principais atividades realizadas no desenvolvimento das atividades propostas na Lista 01 da disciplina IA048: Aprendizado de Máquina, primeiro semestre de 2024. O foco deste exercício é de realizar o ajuste de modelos lineares aos dados de uma série temporal.
+    Este relatório apresenta as principais atividades realizadas no desenvolvimento das atividades propostas na Lista 01 da disciplina IA048: Aprendizado de Máquina, primeiro semestre de 2024. O foco deste exercício é de construir modelos lineares para realizar a previsão de uma série temporal.
 
 \section{Tarefa Proposta}
 
@@ -263,7 +263,7 @@
 
     O conjunto de dados utilizado nesta avaliação é o de tráfego aéreo dos EUA disponibilizado no Kaggle \cite{YYXian_2024}. Segundo o autor este conjunto de dados fornece o tráfego aéreo mensal dos EUA de 2003 a 2023, incluindo o número de passageiros, o número de voos, as milhas de passageiros pagantes, as milhas de assentos disponíveis e o fator de ocupação.
 
-    Nesta avaliação o foco é no número total de voos. Observa-se na figura \ref{fig:principal} que o período de janeiro/2003 a agosto/2008 (azul) é de certa normalidade na economia americana. O início do período em verde (setembro/2008) é marcado pela crise financeira do \emph{subprime}. Esta crise foi consequência do estouro da bolha imobiliária nos EUA devido a empréstimos sem lastro e preços de imóveis inflacionados. O período em vermelho corresponde à crise sanitária causada pela pandemia de Covid-19 e os anos que se seguiram. A queda mais significativa, que inicia em janeiro/2020, corresponde ao período de maior restrição de voos imposta durante a crise sanitária.
+    Nesta avaliação o foco é no número total de voos. A figura \ref{fig:principal} mostra que o período de janeiro/2003 a agosto/2008 (azul) é de certa normalidade na economia americana. O início do período em verde (setembro/2008) é marcado pelo início da crise financeira do \emph{subprime}. Esta crise foi consequência do estouro da bolha imobiliária nos EUA devido a empréstimos sem lastro e preços de imóveis inflacionados. O período em vermelho corresponde à crise sanitária causada pela pandemia de Covid-19 e os anos que se seguiram. A queda mais significativa, que inicia em janeiro/2020, corresponde ao período de maior restrição de voos imposta durante a crise sanitária.
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{A_MainSeries.png}
@@ -280,7 +280,7 @@
         \label{fig:exemplo_original}
     \end{figure}
 
-    A figura \ref{fig:exemplo_media} mostra que a série temporal de média diária de voos por mês se mostra mais suave que a série original. O efeito é mais pronunciado no mês de fevereiro. A série temporal de total mensal de voos dividido pelo número de dias úteis, na figura \ref{fig:exemplo_dais_uteis} não teve uma reposta adequada.
+    A figura \ref{fig:exemplo_media} mostra que a série temporal de média diária de voos por mês se mostra mais suave que a série original. O efeito é mais pronunciado no mês de fevereiro. A série temporal de total mensal de voos dividido pelo número de dias úteis, na figura \ref{fig:exemplo_dais_uteis}, não teve uma reposta adequada.
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{A_Daily_Average_per_Month.png}
@@ -307,14 +307,14 @@
     Antes de separar os dados em treino+validação e teste, foram construídas séries temporais com os valores passados associado a cada entrada na série de voos\footnote{Ao longo destes tópicos a série que se busca ajustar é a da média diária de voos.}. Definindo a série de média diária de voos como $\textbf{y}$, as séries dos valores passados foram definidas como:
 
     \begin{equation}
-        \textbf{x}_{\textbf{k}}(t) = \textbf{y}(t-k) \quad \text{com} \; k=1,\ldots,24 \label{eq:definicao_xs}
+        \textbf{x}_{\textbf{k}}(t_i) = \textbf{y}(t_{i-k}) \quad \text{com} \; k=1,\ldots,24 \label{eq:definicao_xs}
     \end{equation}
 
-    \noindent Onde $t$ são os índices dos dados da série temporal.
+    \noindent Onde $t_i$ são os índices dos dados da série temporal.
 
-    De modo a ter uma melhor comparação entre os diferentes modelos que serão construídos, foram retiradas todas as linhas com valores não definidos (as 24 primeiras entradas da tabela de dados). Desta forma todos os treinos e validações serão feitos com os mesmos conjuntos de dados. Com este filtro o total de dados passa de 249 para 225.
+    De modo a ter uma melhor comparação entre os diferentes modelos que serão construídos, foram retiradas todas as linhas com valores não definidos (as 24 primeiras entradas da tabela de dados). Desta forma todos os processos de treino e validação são feitos com os mesmos conjuntos de dados. Com este filtro o total de dados passa de 249 para 225.
 
-    Aplicando os limites propostos no item \ref{item:b1}, o conjunto de dados de treino+validação fica com 180 elementos e o de teste com 45. Os intervalos de dados de treino+validação e teste apresentam um comportamento cíclico, com suaves variações ao longo dos anos (figura \ref{fig:treino_teste}). A exceção é em 2008, quando eclodiu a crises financeira nos EUA. O intervalo de teste corresponde ao período crítido de restrição de vôos da pandemia de Covid-19 e os anos que se seguiram. É esperado que o modelo apresente dificuldades em prever a série temporal no período mais crítico da pandemia.
+    Aplicando os limites propostos no item \ref{item:b1}, o conjunto de dados de treino+validação fica com 180 elementos e o de teste com 45. Os intervalos de dados de treino+validação e teste apresentam um comportamento cíclico, com suaves variações ao longo dos anos (figura \ref{fig:treino_teste}). A exceção no conjunto de treino+validação é no início de 2008, quando eclodiu a crise financeira nos EUA. O início do intervalo de teste corresponde ao período crítido de restrição de vôos da pandemia de Covid-19. É esperado que o modelo apresente dificuldades em prever a série temporal no período mais crítico da pandemia.
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{B1_TrainTest.png}
@@ -324,9 +324,9 @@
 
     \subsubsection{Normalização dos Dados}
 
-    Como todas variáveis de entrada para os modelos lineares são de mesma natureza, uma modificação na escala dos dados não terá qualquer impacto nos resultados dos ajustes dos modelos lineares. Foi realizado um rápido teste assumindo um modelo linear sem regularização. Como conjunto de teste foram utilizados os primeiros 140 dados do conjunto de treino+validação, e os demais como conjunto de validação. Foram utilizados $\textbf{x}_{\textbf{1}}$ e $\textbf{x}_{\textbf{2}}$ como variáveis do problema.
+    Como todas as variáveis de entrada dos modelos lineares são de mesma natureza, uma modificação na escala dos dados não tem qualquer impacto nos resultados dos ajustes dos modelos lineares. Foi realizado um rápido teste assumindo um modelo linear sem regularização. Como conjunto de teste foram utilizados os primeiros 140 dados do conjunto de treino+validação, e os demais como conjunto de validação. Foram utilizados $\textbf{x}_{\textbf{1}}$ e $\textbf{x}_{\textbf{2}}$ como variáveis do problema.
 
-    A tabela \ref{tab:efeito_mimmaxscaler} mostra que, mesmo gerando modelos distintos, os resultados de RMSE são os mesmos quando as variáveis de entrada estão no intervalo $[0;1]$\footnote{Foi utilizado o objeto \textbf{MinMaxScaler} do \emph{Scikit-learn}} e quando estão com os valores originais.
+    A tabela \ref{tab:efeito_mimmaxscaler} mostra que, mesmo gerando modelos distintos, os resultados de RMSE são os mesmos quando as variáveis de entrada estão no intervalo $[0;1]$\footnote{Foi utilizada a classe \textbf{MinMaxScaler} do \emph{Scikit-learn}} e quando estão com os valores originais.
 
     \begin{table}[h]
         \centering
@@ -343,7 +343,7 @@
         \label{tab:efeito_mimmaxscaler}
     \end{table}
 
-    Durante as iterações da rotina de busca do melhor modelo linear o algoritmo teve dificuldades de convergência com valores alto de \textbf{K} (>15). Ao modificar a escala dos dados de entrada o algoritmo não apresentou problemas. Deste modo, as análises seguintes foram feitas com os dados de entrada escalados para o intervalo $[0;1]$.
+    Durante as iterações da rotina de busca do melhor modelo linear o algoritmo teve dificuldades de convergência com valores altos de \textbf{K} (>15). Ao modificar a escala dos dados de entrada o algoritmo não apresentou problemas. Deste modo, as análises seguintes foram feitas com os dados de entrada escalados para o intervalo $[0;1]$.
 
     \subsubsection{Validação Cruzada}
 
@@ -353,7 +353,7 @@
         \min{}_{i \epsilon I(t), j \epsilon I(v)} |i - j| > h > 0
     \end{equation}
 
-    Foi utilizada a rotina \textbf{TimeSeriesSplit}, implementada no pacote \emph{Scikit-learn}, e um total de 4 pastas (\emph{folds}). A figura \ref{fig:folds} mostra a divisão dos dados entre treino e validação para cada pasta.
+    Foi utilizada a rotina \textbf{TimeSeriesSplit}, implementada no pacote \emph{Scikit-learn}, e um total de 4 pastas (\emph{folds}). A rotina do \emph{Scikit-learn} equivale a utilizar $h=1$. A figura \ref{fig:folds} mostra a divisão dos dados entre treino e validação para cada pasta.
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{B1_Folds.png}
@@ -394,13 +394,21 @@
             \label{fig:naive_erros}
         \end{figure}
 
-    Por ter o menor valor de RMSE médio e apresentar um comportamento de erro melhor \emph{comportado} que as outras alternativas, foi escolhido o segundo modelo para ser utilizado como base para comparação com os demais modelos.
+    O segundo modelo \emph{naïve} tem o menor valor de RMSE médio, e apresenta um gráfico de erro melhor \emph{comportado} que os demais. Este segundo modelo foi o escolhido para ser utilizado como referência na busca pelo modelo \emph{ótimo}.
 
     \subsubsection{Busca pelo Melhor Modelo}
 
-    Em um primeiro momento foi definido utilizar um modelo linear regularizado do tipo \emph{Elastic-Net}. A busca pelo melhor modelo para cada valor de \textbf{K} foi feita com uma busca em grade (\emph{grid search}) por parâmetros ótimos de \textbf{alpha} (entre $0.01$ e $1.0$) e \textbf{l1\_ratio} (entre $0.1$ e $0.9$). O parâmetro de busca do melhor modelo foi a média do RMSE.
+    Em um primeiro momento foi definido utilizar um modelo linear regularizado do tipo \emph{Elastic-Net}:
 
-    Todos os 24 modelos encontrados utilizaram o menor valor de \emph{alpha} que fez parte da busca em grade ($0.01$). Em face destes resultados a avaliação foi refeita utilizando um modelo linear simples (sem regularização). Como o novo modelo não tem parâmetros, não foi preciso realizar uma busca em grid, e foi testado apenas o valor de \textbf{K}.
+    \begin{equation}
+        \frac{1}{2 n} ||y - Xw||^2_2 + \alpha{} \, l1_{ratio} ||w||_1 + \frac{\alpha{}}{2} (1 - l1_{ratio}) ||w||^2_2
+    \end{equation}
+
+    \noindent Onde $n$ é o número de amostras e $w$ são os pesos do modelo linear.
+
+    A busca pelo melhor modelo para cada valor de \textbf{K} foi feita com uma busca em grade (\emph{grid search}) por parâmetros ótimos de $\alpha{}$ (entre $0.01$ e $1.0$) e $l1_{ratio}$ (entre $0.1$ e $0.9$). O parâmetro de busca do melhor modelo foi a média do RMSE.
+
+    Todos os 24 modelos encontrados utilizaram o menor valor de $\alpha{}$ que fez parte da busca em grade ($0.01$). Em face destes resultados a avaliação foi refeita utilizando um modelo linear simples (sem regularização). Como o novo modelo não tem parâmetros, não foi preciso realizar uma busca em grade, e foi testado apenas o valor de \textbf{K} (figura \ref{fig:modelos_lineares}).
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{B1_LinearModels.png}
@@ -410,7 +418,9 @@
 
     O melhor resultado foi com \textbf{K} igual a 13 (validação cruzada com $\text{RMSE} = 534.25$ e $\text{MAPE} = 0.02$). Com o melhor valor de \textbf{K} definido, foi utilizado todo o conjunto de dados de treino+validação para ajustar os parâmetros do modelo escolhido.
 
-    Foi ajustado um segundo modelo com \textbf{K} igual a 13, mas sem normalizar as variáveis. Com este modelo fica mais fácil analisar os valores dos coeficientes do modelo (figura \ref{fig:coef_modelo_linear}). O modelo linear pode ser interpretado como uma média ponderada dos valores nos meses anteriores, já que as variáveis e o valor de saída tem todos a mesma natureza. A soma dos coeficientes com o valor relativo da constante\footnote{Foi definido valor relativo da constante como a divisão do termo constante do modelo linear pela média dos valores de saída.} é próxima da unidade: $0.9687 + 0.0305 = 0.9992$.
+    Foi ajustado um segundo modelo com \textbf{K} igual a 13, mas sem normalizar as variáveis. Com este modelo fica mais fácil analisar os valores dos coeficientes do modelo. O modelo linear pode ser interpretado como uma média ponderada dos valores nos meses anteriores, já que as variáveis e o valor de saída tem todos a mesma natureza. A soma dos coeficientes com o valor relativo da constante\footnote{Foi definido valor relativo da constante como a divisão do termo constante do modelo linear pela média dos valores de saída.} é próxima da unidade: $0.9687 + 0.0305 = 0.9992$.
+
+    A figura \ref{fig:coef_modelo_linear} mostra os valores dos coeficientes utilizados. As variáveis de maior peso foram o passo de tempo anterior ($\textbf{x}_{\textbf{1}}$), um ano antes ($\textbf{x}_{\textbf{12}}$) e o anterior ($\textbf{x}_{\textbf{13}}$). Este resultado guarda certa correspondência com dois dos modelos \emph{naïve} propostos, dando maior peso ao valor anterior (tendência de curto prazo) e ao valor um ano atrás (efeito da sazonalidade).
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{B1_CoefficientsNoScaling.png}
@@ -418,11 +428,10 @@
         \label{fig:coef_modelo_linear}
     \end{figure}
 
-    O gráfico com os valores dos coeficientes utilizados mostra que as variáveis de maior peso foram o passo de tempo anterior ($\textbf{x}_{\textbf{1}}$), um ano antes ($\textbf{x}_{\textbf{12}}$) e o anterior ($\textbf{x}_{\textbf{13}}$). Este resultado guarda certa correspondência com dois dos modelos naïve propostos, dando maior peso ao valor anterior (tendência de curto prazo) e ao valor um ano atrás (efeito da sazonalidade).
 
     \subsubsection{Erros com os Dados de Teste} \label{sec:testes_modelo}
 
-    O modelo construído teve um resultado ruim nos dados de teste, com $\text{RMSE} = 3187.39$ e $\text{MAPE} = 0.1126$. Na figura \ref{fig:melhor_modelo_teste} observa-se que o conjunto de teste (área em vermelho na figura) coincide com o período da pandemia e os meses posteriores. Por se tratar de um evento singular e que não apareceu nos dados de treino e validação, já era esperado que o modelo tivesse dificuldade em prever o comportamento da série temporal. O alto valor de RMSE associado ao conjunto de teste demonstra a dificuldade do modelo.
+    O modelo construído teve um resultado ruim nos dados de teste, com $\text{RMSE} = 3\,187.$ e $\text{MAPE} = 0.1126$. Na figura \ref{fig:melhor_modelo_teste} observa-se que o conjunto de teste (área em vermelho na figura) coincide com o período da pandemia e os meses posteriores. Por se tratar de um evento singular e que não apareceu nos dados de treino e validação, já era esperado que o modelo tivesse dificuldade em prever o comportamento da série temporal. O alto valor de RMSE associado ao conjunto de teste demonstra a dificuldade do modelo.
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{B2_BestModelFit.png}
@@ -454,17 +463,17 @@
             \label{fig:treino_teste_modelo_dois}
         \end{figure}
 
-        Foram testados os mesmos modelos simples (\emph{naïve}) propostos anteriormente (em \ref{sec:modelos_naive}). O modelo de melhor resultado foi o que utiliza o valor do mês anterior para prever o próximo intervalo de tempo. Os resultados de RMSE foram $3304.75$, $11023.11$ e $17523.33$, para o primeiro, segundo e terceiro modelos \emph{naïve} propostos, respectivamente. Como o intervalo de validação corresponde a um perído de significativas variações na série temporal, os modelos que se baseiam em horizontes de tempo mais longo tem mais dificuldade de prever este comportamento.
+        Foram testados os mesmos modelos simples (\emph{naïve}) propostos anteriormente (em \ref{sec:modelos_naive}). O modelo de melhor resultado foi o que utiliza o valor do mês anterior para prever o próximo intervalo de tempo. Os resultados de RMSE foram $3\,304.$, $11\,023.$ e $17\,523.$, para o primeiro, segundo e terceiro modelos \emph{naïve} propostos, respectivamente. Como o intervalo de validação corresponde a um perído de significativas variações na série temporal, os modelos que se baseiam em horizontes de tempo mais longo tem mais dificuldade de prever este comportamento.
 
         O mesmo comportamento observado entre os modelos \emph{naïve} apareceu na seleção de modelos em função da quantidade de passos de tempo passados (figura \ref{fig:modelos_lineares_novo}). Os modelos que se restringem a dados de passos de tempo mais recentes apresentaram melhores resultados. Este resultado é devido ao conjunto de dados de validação utilizado. O melhor modelo é o que se baseia apenas nos dois passos de tempo anteriores, e com maior impacto do passo de tempo imediatamente anterior.
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{C1_LinearModels.png}
-            \caption{RMSE dos diferentes modelos testados com o novo conjunto de dados.}
+            \caption{RMSE de validação dos diferentes modelos testados com o novo conjunto de dados.}
             \label{fig:modelos_lineares_novo}
         \end{figure}
 
-        Foi aplicado o mesmo processo de reconstruir o modelo com $\textbf{K} = 2$ em todo o conjunto de treino+validação. Também foi construido uma versão deste modelo sem normalizar as variáveis do problema, de forma a melhor analisar os seus coeficientes (figura \ref{fig:coeficientes_novo}). Fica claro que o modelo é próximo do modelo \emph{naïve}, com um peso grande do valor imediatamente anterior, acrescido de um uma \emph{correção} do valor dois meses atrás. Novamente o modelo pode ser interpretado como um média ponderada, a soma dos coeficientes com o valor relativo da constante é aproximadamente a unidade: $ 0.9211 + 0.0778 = 0.9989$. Como esperado, este novo modelo apresenta um comportamento mais próximo dos dados originais no período da pandemia (figura \ref{fig:ajuste_novo}).
+        Foi aplicado o mesmo processo de reconstruir o modelo \emph{ótimo} (com $\textbf{K} = 2$) em todo o conjunto de treino+validação. Também foi construída uma versão deste modelo sem normalizar as variáveis do problema, de forma a melhor analisar os seus coeficientes (figura \ref{fig:coeficientes_novo}). Fica claro que o modelo é próximo do modelo \emph{naïve}, com um peso grande do valor imediatamente anterior, acrescido de um uma \emph{correção} do valor dois meses atrás. Novamente o modelo pode ser interpretado como um média ponderada. A soma dos coeficientes com o valor relativo da constante é aproximadamente a unidade: $ 0.9211 + 0.0778 = 0.9989$. Como esperado, este novo modelo se ajusta melhor aos dados no período da pandemia (figura \ref{fig:ajuste_novo}).
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{C1_CoefficientsNoScaling.png}
@@ -478,7 +487,7 @@
             \label{fig:ajuste_novo}
         \end{figure}
 
-        Os dados de teste deste novo modelo correspondem aos anos de 2022 e 2023, avaliados com o primeiro modelo em \ref{sec:testes_modelo}. Para os dados de teste temos para este novo modelo $\text{RMSE} = 590.57$ e $\text{MAPE} = 0.0208$. Para os anos de 2022 e 2023 os dois modelos construídos mostraram resultados próximos (figuras \ref{fig:erros_modelos} e \ref{fig:ajuste_modelos}).
+        Os dados de teste deste novo modelo correspondem aos anos de 2022 e 2023, com valores de erro $\text{RMSE} = 590.57$ e $\text{MAPE} = 0.0208$. Para os anos de 2022 e 2023 os dois modelos construídos mostraram resultados próximos (figuras \ref{fig:erros_modelos} e \ref{fig:ajuste_modelos}), com o primeiro modelo \emph{ligeiramente} melhor..
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{C3_RMSE.png}
@@ -494,9 +503,13 @@
 
         \subsection{Extrapolação Recursiva}
 
-        Foi feita uma extrapolação recursiva de 36 meses a partir do último valor do período de validação com ambos modelos. O primeiro modelo utiliza 13 valores prévios, de modo que apresenta um comportamento mais estável nesta previsão recursiva (figura \ref{fig:extrapolacao_primeiro_modelo}). Depois de cerca de um ano o primeiro modelo também começa a apresentar um comportamento errático, o que coincide com o passo de tempo em que realiza previsões baseadas apena em dados estimados pelo próprio modelo.
+        Para testar a capacidade preditiva destes modelos para um prazo maior, foi feita uma extrapolação recursiva nos períodos de teste, a partir do último valor do período de validação.
 
-        Observa-se que o segundo modelo, que se baseia unicamente nos dois valores mais recentes, rapidamente perde a capacidade de realizar qualquer previsão confiável (figura \ref{fig:extrapolacao_segundo_modelo}). É necessário realizar uma ajuste específico para valores de L maiores que um para conseguir previsões confiáveis.
+        Como esperado, o primeiro modelo não consegue prever o comportamento da série durante a pandemia (figura \ref{fig:extrapolacao_primeiro_modelo}). O modelo apresenta um comportamento \emph{relativamente} estável nesta previsão recursiva. Depois de cerca de um ano o modelo começa a apresentar um comportamento errático, o que coincide com o passo de tempo em que realiza previsões baseadas apena em dados estimados pelo próprio modelo.
+
+        O segundo modelo (figura \ref{fig:extrapolacao_segundo_modelo}), que se baseia unicamente nos dois valores mais recentes, rapidamente perde a capacidade de realizar qualquer previsão confiável.
+
+        Nenhum dos modelos pode ser utilizado para realizar previsões além do mês seguinte. É necessário realizar uma ajuste específico para valores de L maiores que um.
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{C3_RecursiveExtrapolation.png}
@@ -510,10 +523,11 @@
             \label{fig:extrapolacao_segundo_modelo}
         \end{figure}
 
-
 \section{Conclusão}
 
-    A definição dos períodos de treino e validação tiveram impacto no número de parâmetros de cada modelo. Ambos modelos dependem muito do valor do mês anterior para estimar o próximo, sendo incapazes de responder adequadamente a eventos com variações abruptas. Variáveis adicionais seriam necessárias para permitir que os modelos lineares conseguissem aproximar melhor eventos como as restrições impostas pela Pandemia de Covid-19.
+    As características dos períodos de treino e validação tiveram impacto no número de parâmetros de cada modelo. A definição dos períodos de teste e validação deve estar alinhada com o que se espera do modelo a ser construído.
+
+    Ambos modelos dependem muito do valor do mês anterior para estimar o próximo, e são incapazes de responder adequadamente a eventos com variações abruptas. Variáveis adicionais são necessárias para permitir que os modelos lineares conseguam aproximar melhor eventos como as restrições impostas pela Pandemia de Covid-19.
 
 
 \appendix
