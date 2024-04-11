@@ -166,6 +166,8 @@ no_sync/
 *.bbl
 *.log
 *.spl
+*.fls
+*.fdb_latexmk
 *.blg
 *.out
 *.gz
