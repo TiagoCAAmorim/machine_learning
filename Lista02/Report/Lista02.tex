@@ -24,6 +24,7 @@
 \usepackage{amsmath}
 \usepackage{multirow}
 \usepackage{tabularx}
+\usepackage{booktabs}
 
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
@@ -209,28 +210,31 @@
 %% main text
 \section{Introdução}
 
-    Este relatório apresenta as principais atividades realizadas no desenvolvimento das atividades propostas na Lista 02 da disciplina IA048: Aprendizado de Máquina, primeiro semestre de 2024. O foco deste exercício é de construir a avaliar o desempenho de algoritmos de classificação.
+    Este relatório apresenta as principais atividades realizadas no desenvolvimento das atividades propostas na Lista 02 da disciplina IA048: Aprendizado de Máquina, primeiro semestre de 2024. O foco deste exercício é de construir a avaliar o desempenho de algoritmos de classificação usando duas versões de um mesmo estudo.
 
 \section{Tarefa Proposta}
 
     Nesta atividade, vamos abordar o problema de reconhecimento de atividades humanas (HAR, do inglês \emph{human activity recognition}) a partir de informações capturadas por sensores de smartphones. Em particular, vamos trabalhar com a base de dados \href{https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones}{UCI HAR} \cite{anguita2013public}, que contém registros de sensores inerciais presentes em um smartphone preso à cintura de 30 sujeitos realizando atividades cotidianas. Cada pessoa realizou seis atividades, as quais correspondem aos seguintes rótulos:
 
     \begin{table}[h]
+        \begin{minipage}{\linewidth}
         \centering
-        \begin{tabular}{c c}
-            \hline
-            Atividade & Rótulo \\
-            \hline
-            Caminhar & 0 \\
-            Subir escadas & 1 \\
-            Descer escadas & 2 \\
-            Sentado & 3 \\
-            Em pé & 4 \\
-            Deitado & 5 \\
-            \hline
+        \begin{tabular}{l l c}
+            \toprule
+            \textbf{Atividade} & & \textbf{Rótulo} \\
+            \midrule
+            Caminhar & (\emph{Walking}) & 1 \\
+            Subir escadas & (\emph{W. upstairs}) & 2 \\
+            Descer escadas & (\emph{W. downstairs}) & 3 \\
+            Sentado & (\emph{Sitting}) & 4 \\
+            Em pé & (\emph{Standing}) & 5 \\
+            Deitado & (\emph{Laying}) & 6 \\
+            \bottomrule
         \end{tabular}
-        \caption{Rótulos}
+        \caption{Rótulos\protect\footnotemark.}
         \label{tab:rotulos}
+        \footnotetext{Foram adicionados os termos originais entre parênteses porque todos os gráficos foram construídos com os termos em inglês}
+        \end{minipage}
     \end{table}
 
     Foram capturadas as amostras dos três eixos (x, y e z) do acelerômetro (ACC, do inglês \emph{accelerometer}) e do giroscópio (GYR, do inglês \emph{gyroscope}) presentes no smartphone, empregando uma taxa de amostragem de 50 Hz. O conjunto completo de amostras foi particionado aleatoriamente em treinamento (70\% dos voluntários) e teste (30\% dos voluntários).
@@ -253,18 +257,82 @@
             \item Monte, então, a nova matriz de entrada concatenando os seis sinais temporais e, então, repita o procedimento experimental detalhado nos itens (a) e (b). Ao final, com base no desempenho obtido, teça uma análise comparativa entre a abordagem do item anterior e a abordagem baseada nos sinais “brutos” empregada nesta segunda parte.
         \end{enumerate}
 
-
-
-
 \section{Aplicação}
 
     Toda a avaliação foi feita em um único \emph{notebook} Jupyter, em Python. Foi feito o uso da biblioteca \emph{Scikit-learn} \cite{scikit-learn} para fazer as diferentes manipulações nos dados. O código pode ser encontrado em \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista02/Lista02.ipynb}{https://github.com/Tiago CAAmorim/machine\_learning}.
 
-    \subsection{Avaliação do Conjunto de Dados}
+    \subsection{Conjuntos de Dados}
 
-        \subsubsection{Pré-processamento}
+        Os dados foram disponibilizados em formato tabular, já com uma separação entre os dados de treino e de teste (tabela \ref{tab:total_dados}). Os dados pré-processados são formados por 561 atributos, enquanto que os dados brutos são formados por 768 atributos\footnote{Neste estudo foram ignorados os dados de aceleração total, que são 384 atributos adicionais.}. Uma descrição de cada um dos atributos é feita pelos autores no pacote do \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista02/UCI_HAR_Dataset/features_info.txt}{conjunto de dados} \cite{anguita2013public}.
+        \begin{table}[h]
+            \centering
+            \begin{tabular}{c c}
+                \toprule
+                \textbf{Conjunto} & \textbf{Número de Amostras} \\
+                \midrule
+                Treino & $7\,352$ ($71.4\%$) \\
+                Teste & $2\,947$ ($28.6\%$) \\
+                \addlinespace
+                Total & $10\,299$ ($100\%$)\\
+                \bottomrule
+            \end{tabular}
+            \caption{Tamanho da base de dados.}
+            \label{tab:total_dados}
+        \end{table}
 
-    \subsection{Primeiro Modelo de Classificação}
+        Aparentemente o desbalanço entre as classes não é significativo, mas existe (figura \ref{fig:numero_por_classe}). A menor classe tem cerca de 30\% menos amostras que a maior classe. De toda forma será utilizada a acurácia balanceada como métrica da qualidade do classificador (média dos \emph{recalls} de cada classe).
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{A_LabelCount.png}
+            \caption{Número de amostras por classe.}
+            \label{fig:numero_por_classe}
+        \end{figure}
+
+    \subsection{Dados Pré-processados}
+        Os dados pré-processados estão normalizados no intervalo $[-1;1]$, à exceção de alguns dos atributos (figura \ref{fig:dados_preprocessados}). Desta forma, em um primeiro momento não existe necessidade de normalizar os dados.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{A_Dataset_Scale.png}
+            \caption{Limites dos atributos do conjunto de treinamento dos dados pré-processados.}
+            \label{fig:dados_preprocessados}
+        \end{figure}
+
+        \subsubsection{Regressão Logística}
+
+        O classificador de regressão logística foi construído com a classe \href{https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegressionCV.html}{\textbf{LogisticRegressionCV}} do \emph{Scikit-Learn}. Esta classe realiza a otimização do parâmetro de regularização junto com validação cruzada. Foram utilizadas as seguintes opções para o ajuste deste modelo:
+
+        \begin{enumerate}
+            \item Validação cruzada estratificada em 5 pastas.
+            \item Normalização do tipo $l_2$ ($\frac{1}{2} ||w||_2^2$), com otimização do seu inverso ($c = \frac{1}{l_2}$)
+            \item Função objetivo da otimização: acurácia balanceada.
+            \item Estratégia: multinomial (entropia cruzada\footnote{Equivalente a utilizar \emph{Softmax}.}).
+        \end{enumerate}
+
+        O modelo ajustado tem $l_2 = 0.3594$. A acurácia balanceada na validação cruzada foi de $0.9932$, e com os dados de teste $0.9598$.
+
+        \begin{table}[h]
+            \centering
+            \begin{tabular}{l c c}
+                \toprule
+                \textbf{Classe} & \textbf{Recall}  & \textbf{F1 score} \\
+                \midrule
+                Todas     & $0.9598$ & $0.9606$ \\
+                \addlinespace
+                Caminhar   & $0.9940$ & $0.9686$ \\
+                Subir escadas   & $0.9427$ & $0.9569$ \\
+                Descer escadas & $0.9690$ & $0.9795$ \\
+                Sentado   & $0.8717$ & $0.9214$ \\
+                Em pé  & $0.9812$ & $0.9372$ \\
+                Deitado    & $1.0000$ & $1.0000$ \\
+                \bottomrule
+            \end{tabular}
+            \caption{Resultados do classificador com regressão logística.}
+            \label{tab:total_dados}
+        \end{table}
+
+
+
+        \subsubsection{Primeiro Modelo de Classificação}
 
         \subsubsection{Normalização dos Dados}
 
@@ -310,20 +378,6 @@
 
 % \end{thebibliography}
 
-% \newpage
-% \FloatBarrier
-% \section{Código em C}
-
-% O código de ambos métodos foi implementado em um único arquivo. O código é apresentado em duas partes neste documento para facilitar a leitura. O código pode ser encontrado em \href{https://github.com/TiagoCAAmorim/numerical-methods}{https://github.com/TiagoCAAmorim/numerical-methods}.
-
-% \subsection{Método da Bissecção}
-% \lstinputlisting[language=C, linerange={1-229}]{./02_newton_raphson.c}
-
-% \subsection{Método de Newton-Raphson}
-% \lstinputlisting[language=C, linerange={231-445}]{./02_newton_raphson.c}
-
-% \subsection{Método da Mínima Curvatura}
-% \lstinputlisting[language=C, linerange={448-958}]{./02_newton_raphson.c}
 
 \end{document}
 \endinput
