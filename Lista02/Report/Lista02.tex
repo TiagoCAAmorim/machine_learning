@@ -296,7 +296,7 @@
             \label{fig:dados_preprocessados}
         \end{figure}
 
-    \subsubsection{Regressão Logística}
+    \subsubsection{Regressão Logística} \label{sec:logistica}
 
         O classificador de regressão logística foi construído com a classe \href{https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegressionCV.html}{\textbf{LogisticRegressionCV}} do \emph{Scikit-Learn}. Esta classe realiza a otimização do parâmetro de regularização junto com validação cruzada. Foram utilizadas as seguintes opções para o ajuste deste modelo:
 
@@ -327,25 +327,25 @@
                 Deitado    & $1.0000$ & $1.0000$ \\
                 \bottomrule
             \end{tabular}
-            \caption{Resultados do classificador com regressão logística para os dados pré-processados.}
+            \caption{Resultados do classificador de regressão logística para os dados pré-processados.}
             \label{tab:resultados_logistico_preprocessados}
         \end{table}
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{A_Logistic_CM.png}
-            \caption{Matriz de confusão do classificador com regressão logística para os dados pré-processados.}
+            \caption{Matriz de confusão do classificador de regressão logística para os dados pré-processados.}
             \label{fig:cm_logistico_preprocessados}
         \end{figure}
 
     \subsubsection{k-Vizinhos mais Próximos}
 
-        Na primeira tentativa de construção de um classificador com k-Vizinhos mais Próximos (\emph{kNN}) foram utilizadas as opções padrão da classe \href{https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html}{KNeighborsClassifier} do \emph{Scikit-Learn}: distância euclidiana e pesos uniformes. Novamente foi utilizada a validação cruzada estratificada em 5 pastas.
+        Na primeira tentativa de construção de um classificador de k-Vizinhos mais Próximos (\emph{kNN}) foram utilizadas as opções padrão da classe \href{https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html}{KNeighborsClassifier} do \emph{Scikit-Learn}: distância euclidiana e pesos uniformes. Novamente foi utilizada a validação cruzada estratificada em 5 pastas.
 
-        O valor ótimo de \textbf{k} ficou em 17 (figura \ref{fig:knn_melhor_k_preprocessados}). Este classificador com opções padrão (\emph{Vanilla}) ficou com acurácia balanceada na validação cruzada igual a $0.8999$, e com os dados de teste igual a $0.8999$\footnote{A coincidência de valores levantou suspeitas quanto ao código desenvolvido. O código foi verificado mais de uma vez, e nenhum erro foi encontrado. Os valores diferem na quinta casa decimal.}. Este classificador teve resultados inferiores ao do classificador com regressão logística (tabela \ref{tab:resultados_knn_vanilla_preprocessados}). Os resultados foram priores em todas as classes.
+        O valor ótimo de \textbf{k} ficou em 17 (figura \ref{fig:knn_melhor_k_preprocessados}). Este classificador com opções padrão (\emph{Vanilla}) ficou com acurácia balanceada na validação cruzada igual a $0.8999$, e com os dados de teste igual a $0.8999$\footnote{A coincidência de valores levantou suspeitas quanto ao código desenvolvido. O código foi verificado mais de uma vez, e nenhum erro foi encontrado. Os valores diferem na quinta casa decimal.}. Este classificador teve resultados inferiores ao do classificador de regressão logística (tabela \ref{tab:resultados_knn_vanilla_preprocessados}). Os resultados foram priores em todas as classes.
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{A_kNN_bestK.png}
-            \caption{Otimização do parâmetro \textbf{k} do classificador com k-Vizinhos mais Próximos para os dados pré-processados.}
+            \caption{Otimização do parâmetro \textbf{k} do classificador de k-Vizinhos mais Próximos para os dados pré-processados.}
             \label{fig:knn_melhor_k_preprocessados}
         \end{figure}
 
@@ -365,17 +365,19 @@
                 Deitado    & $0.9963$ & $0.9981$ \\
                 \bottomrule
             \end{tabular}
-            \caption{Resultados do classificador com k-Vizinhos mais Próximos para os dados pré-processados.}
+            \caption{Resultados do classificador de k-Vizinhos mais Próximos para os dados pré-processados.}
             \label{tab:resultados_knn_vanilla_preprocessados}
         \end{table}
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{A_kNN_Vanilla_CM.png}
-            \caption{Matriz de confusão do classificador com k-Vizinhos mais Próximos para os dados pré-processados.}
+            \caption{Matriz de confusão do classificador de k-Vizinhos mais Próximos para os dados pré-processados.}
             \label{fig:cm_knn_vanilla_preprocessados}
         \end{figure}
 
-        Dada a menor performance do classificador com k-Vizinhos mais Próximos, foram realizados alguns testes para tentar melhorar o seu resultado. A primeira tentativa foi uma busca em grade ao redor do melhor \textbf{k} encontrado, buscando os melhores hiperparâmetros para o classificador de k-Vizinhos mais Próximos. Foram testados diferentes valores de \textbf{p} para a métrica de Minkowski e o uso de pesos ponderados pelo inverso da distância (tabela \ref{tab:parâmetros_knn}). O classificador com os hiperparâmetros ótimos (\emph{kNN opt1}) mostrou um pequeno ganho na acurácia balanceada: $0.9045$ na validação cruzada e $0.9146$ nos dados de teste.
+        Dada a menor performance do classificador de k-Vizinhos mais Próximos, foram realizados alguns testes para tentar melhorar o seu resultado. A primeira tentativa foi uma busca em grade ao redor do melhor \textbf{k} encontrado, buscando os melhores hiperparâmetros para o classificador de k-Vizinhos mais Próximos.
+
+        Foram testados diferentes valores de \textbf{p} para a métrica de Minkowski e o uso de pesos ponderados pelo inverso da distância (tabela \ref{tab:parâmetros_knn}). O classificador com os hiperparâmetros ótimos (\emph{kNN opt1}) mostrou um pequeno ganho na acurácia balanceada: $0.9045$ na validação cruzada e $0.9146$ nos dados de teste.
 
         \begin{table}[h]
             \centering
@@ -391,19 +393,19 @@
             \label{tab:parâmetros_knn}
         \end{table}
 
-        Como alguns dos dados de entrada não estava \emph{exatamente} escalados em [-1;1], a segunda tentativa foi aplicar uma escala [0;1] aos dados pré-processados. O resultado foi um pequeno incremento na acurácia balanceada: $0.9059$ na validação cruzada e $0.9153$ nos dados de teste.
+        Como alguns dos dados de entrada não estava \emph{exatamente} escalados em [-1;1], a segunda tentativa foi aplicar uma escala [0;1] aos dados pré-processados (\emph{kNN scaled}). O resultado foi um pequeno incremento na acurácia balanceada: $0.9059$ na validação cruzada e $0.9153$ nos dados de teste.
 
-        A última etapa na busca por um classificador com k-Vizinhos mais Próximos de melhores resultados foi avaliar os parâmetros de entrada. Foi feita uma otimização \emph{gulosa} dos parâmetros que são utilizados na construção do classificador de k-Vizinhos mais Próximos. A cada iteração são avaliados todos os parâmetros de entrada. A cada passo é retirado um dos parâmetros de entrada e o modelo é reconstruído. Se a acurácia balanceada aumentar, este parâmetro é retirado permamentemente. O algoritmo termina quando nenhum parâmetro é retirado em uma iteração.
+        A última etapa na busca por um classificador de k-Vizinhos mais Próximos de melhores resultados foi avaliar os parâmetros de entrada. Foi feita uma otimização \emph{gulosa} dos parâmetros que são utilizados na construção do classificador de k-Vizinhos mais Próximos. A cada iteração são avaliados todos os parâmetros de entrada. A cada passo é retirado um dos parâmetros de entrada e o modelo é reconstruído. Se a acurácia balanceada aumentar, este parâmetro é retirado permamentemente. O algoritmo termina quando nenhum parâmetro é retirado em uma iteração.
 
-        Para este estudo foi feita apenas uma iteração, ou seja, a retirada de cada atributo foi testada uma única vez. Este procedimento excluiu 65 dos 561 atributos, e levou a uma acurácia balanceada de $0.9218$ na validação cruzada e de $0.9192$ nos dados de teste.
+        Para este estudo foi feita apenas uma iteração, ou seja, a retirada de cada atributo foi testada uma única vez. Este procedimento excluiu 65 dos 561 atributos (\emph{kNN trimmed}), e levou a uma acurácia balanceada de $0.9218$ na validação cruzada e de $0.9192$ nos dados de teste.
 
         Uma possível etapa adicional seria a otimização do \emph{peso} de cada atributo. Este procedimento seria a otimização de 496 pesos. Devido ao custo computacional envolvido em uma otimização de tantos parâmetros, optou-se por considerar a avaliação concluída.
 
-        Foi possível melhorar os resultados com relação a otimizar apenas o número de vizinhos, mas o incremento foi relativamente pequeno. Os resultados com os dados de teste geralmente seguiram os incrementos nos resultados com a validação cruzada. Em todas as tentativas os resultados ficaram abaixo daqueles do classificador com regressão logística.
+        Foi possível melhorar os resultados com relação a otimizar apenas o número de vizinhos, mas o incremento foi relativamente pequeno. Os resultados com os dados de teste geralmente seguiram os incrementos nos resultados com a validação cruzada. Em todas as tentativas os resultados ficaram abaixo daqueles do classificador de regressão logística.
 
     \subsection{Dados Brutos}
 
-        Os dados brutos de aceleração e do giroscópio nas três direções levam a um conjunto de dados com 768 atributos. Os dados não estão normalizados (figura \ref{fig:dados_brutos}). Os dados pré-processados estavam \emph{aproximadamente} em $[-1;1]$ e foi pequeno, para o modelo de k-Vizinhos mais Próximos, o ganho de mudar a escala para $[0;1]$. Os dados brutos foram escalados para $[-1;1]$.
+        Os dados brutos (\emph{raw}) de aceleração e do giroscópio nas três direções levam a um conjunto de dados com 768 atributos. Os dados não estão normalizados (figura \ref{fig:dados_brutos}). Os dados pré-processados estavam \emph{aproximadamente} em $[-1;1]$ e foi pequeno, para o modelo de k-Vizinhos mais Próximos, o ganho de mudar a escala para $[0;1]$. Os dados brutos foram escalados para $[-1;1]$.
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{B_Dataset_Scale.png}
@@ -411,17 +413,107 @@
             \label{fig:dados_brutos}
         \end{figure}
 
-
-
     \subsubsection{Regressão Logística}
+
+        Foram aplicadas as mesmas rotinas discutidas anteriormente (seção \ref{sec:logistica}). O modelo ajustado aos dados brutos tem $l_2 = 21.5443$, bem maior que o valor obtido no ajuste aos dados pré-processados. A acurácia balanceada na validação cruzada foi de $0.3911$, e com os dados de teste $0.2999$. O resultado ficou \textbf{muito} abaixo do alcançado com os dados pré-processados (tabela \ref{tab:resultados_logistico_brutos} e figura \ref{fig:cm_logistico_brutos}).
+
+        \begin{table}[h]
+            \centering
+            \begin{tabular}{l c c}
+                \toprule
+                \textbf{Classe} & \textbf{\emph{Recall}}  & \textbf{\emph{F1 score}} \\
+                \midrule
+                Todas & $0.2999$ & $0.2957$ \\
+                \addlinespace
+                Caminhar   & $0.2560$ & $0.3409$ \\
+                Subir escadas   & $0.2527$ & $0.3434$ \\
+                Descer escadas & $0.2881$ & $0.3523$ \\
+                Sentado   & $0.0754$ & $0.1054$ \\
+                Em pé  & $0.6015$ & $0.3760$ \\
+                Deitado    & $0.3259$ & $0.2564$ \\
+                \bottomrule
+            \end{tabular}
+            \caption{Resultados do classificador de regressão logística para os dados brutos.}
+            \label{tab:resultados_logistico_brutos}
+        \end{table}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{B_Logistic_CM.png}
+            \caption{Matriz de confusão do classificador de regressão logística para os dados brutos.}
+            \label{fig:cm_logistico_brutos}
+        \end{figure}
 
     \subsubsection{k-Vizinhos mais Próximos}
 
+        Na avaliação com os dados pré-processados os ganhos com as otimizações foram relativamente pequenos. Decidiu-se por construir apenas o classificador de k-Vizinhos mais Próximos que utiliza os hiperparâmetros \emph{padrão}.
+
+        O classificador de k-Vizinhos mais Próximos \emph{ótimo} foi com apenas um vizinho (\textbf{k}=1), ou seja, é utilizada a classe do dado mais próximo (figura \ref{fig:knn_melhor_k_brutos}). A acurácia balanceada na validação cruzada foi de $0.7424$, e com os dados de teste $0.7191$. Os resultados foram significativamente melhores que os do classificador de regressão logística (tabela \ref{tab:resultados_knn_vanilla_brutos}), mas inferiores aos dos classificadores construídos com os dados pré-processados.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{B_kNN_bestK.png}
+            \caption{Otimização do parâmetro \textbf{k} do classificador de k-Vizinhos mais Próximos para os dados brutos.}
+            \label{fig:knn_melhor_k_brutos}
+        \end{figure}
+
+        \begin{table}[h]
+            \centering
+            \begin{tabular}{l c c}
+                \toprule
+                \textbf{Classe} & \textbf{\emph{Recall}}  & \textbf{\emph{F1 score}} \\
+                \midrule
+                Todas & $0.7191$ & $0.7352$ \\
+                \addlinespace
+                Caminhar   & $0.8427$ & $0.8875$ \\
+                Subir escadas   & $0.8450$ & $0.9108$ \\
+                Descer escadas & $0.6452$ & $0.7844$ \\
+                Sentado   & $0.7026$ & $0.5862$ \\
+                Em pé  & $0.5846$ & $0.5466$ \\
+                Deitado    & $0.6946$ & $0.6959$ \\
+                \bottomrule
+            \end{tabular}
+            \caption{Resultados do classificador de k-Vizinhos mais Próximos para os dados brutos.}
+            \label{tab:resultados_knn_vanilla_brutos}
+        \end{table}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{B_kNN_Vanilla_CM.png}
+            \caption{Matriz de confusão do classificador de k-Vizinhos mais Próximos para os dados brutos.}
+            \label{fig:cm_knn_vanilla_brutos}
+        \end{figure}
+
+\section{Análise dos Resultados}
+
+        Os resultados dos classificadores logístico e k-Vizinhos mais Próximos são significativamente piores quando treinados com os dados brutos. O classificador logístico foi o que mais teve dificuldades com os dados brutos (figura \ref{fig:resultados}).
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C_Results.png}
+            \caption{Resultados dos classificadores construídos.}
+            \label{fig:resultados}
+        \end{figure}
+
+        Uma análise de componentes principais pode ajudar a explicar a dificuldade do modelo classificador de regressão logística em trabalhar com os dados brutos. Foram construídos gráficos com os dados pré-processados nas principais direções (figura \ref{fig:pc_preprocessados}). Fica evidente que é possível realizar uma separação dos dados por meio de hiperplanos, que é a forma com que o classificador de regressão logística separa os dados.
+
+        Em contraste, os mesmos gráficos com os dados brutos (figura \ref{fig:pc_brutos}) mostram que a estratégia de separar com hiperplanos não deve funcionar, que é evidenciado pelo resultado do classificador de regressão logística com os dados brutos.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C_PrincipalComponents.png}
+            \caption{Dados pré-processados nas direções dos cinco maiores componentes principais.}
+            \label{fig:pc_preprocessados}
+        \end{figure}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C_PrincipalComponents_Raw.png}
+            \caption{Dados brutos nas direções dos cinco maiores componentes principais.}
+            \label{fig:pc_brutos}
+        \end{figure}
 
 \section{Conclusão}
 
+        Os resultados dos experimentos relizados mostram que o classificador de regressão logística é muito dependente da possibilidade de separar os dados utilizando hiperplanos. A significativa diferença entre o classificador construído com os dados brutos e o construído com os dados pré-processados mostra que é preciso buscar representações dos dados linearmente \emph{separáveis} para utilizar este classificador.
 
-\appendix
+        O classificador de k-Vizinhos mais Próximos foi menos eficiente que o de regressão logística com os dados pré-processados, e conseguiu um desempenho \emph{aceitável} com os dados brutos. O fato do \textbf{k} ótimo ser um foi um indicativo da dificuldade em separar as amostras no espaço dos dados brutos.
+
+% \appendix
 
 % \section{Lista de Variáveis}
 
