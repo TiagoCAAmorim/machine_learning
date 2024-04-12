@@ -25,6 +25,7 @@
 \usepackage{multirow}
 \usepackage{tabularx}
 \usepackage{booktabs}
+\usepackage{tablefootnote}
 
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
@@ -217,11 +218,10 @@
     Nesta atividade, vamos abordar o problema de reconhecimento de atividades humanas (HAR, do inglês \emph{human activity recognition}) a partir de informações capturadas por sensores de smartphones. Em particular, vamos trabalhar com a base de dados \href{https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones}{UCI HAR} \cite{anguita2013public}, que contém registros de sensores inerciais presentes em um smartphone preso à cintura de 30 sujeitos realizando atividades cotidianas. Cada pessoa realizou seis atividades, as quais correspondem aos seguintes rótulos:
 
     \begin{table}[h]
-        \begin{minipage}{\linewidth}
         \centering
         \begin{tabular}{l l c}
             \toprule
-            \textbf{Atividade} & & \textbf{Rótulo} \\
+            \textbf{Atividade}\tablefootnote{Foram adicionados os termos originais entre parênteses para facilitar a comparação com os gráficos, que foram construídos com os termos em inglês.} & & \textbf{Rótulo} \\
             \midrule
             Caminhar & (\emph{Walking}) & 1 \\
             Subir escadas & (\emph{W. upstairs}) & 2 \\
@@ -231,10 +231,8 @@
             Deitado & (\emph{Laying}) & 6 \\
             \bottomrule
         \end{tabular}
-        \caption{Rótulos\protect\footnotemark.}
+        \caption{Rótulos da base de dados.}
         \label{tab:rotulos}
-        \footnotetext{Foram adicionados os termos originais entre parênteses porque todos os gráficos foram construídos com os termos em inglês}
-        \end{minipage}
     \end{table}
 
     Foram capturadas as amostras dos três eixos (x, y e z) do acelerômetro (ACC, do inglês \emph{accelerometer}) e do giroscópio (GYR, do inglês \emph{gyroscope}) presentes no smartphone, empregando uma taxa de amostragem de 50 Hz. O conjunto completo de amostras foi particionado aleatoriamente em treinamento (70\% dos voluntários) e teste (30\% dos voluntários).
@@ -280,7 +278,7 @@
             \label{tab:total_dados}
         \end{table}
 
-        Aparentemente o desbalanço entre as classes não é significativo, mas existe (figura \ref{fig:numero_por_classe}). A menor classe tem cerca de 30\% menos amostras que a maior classe. De toda forma será utilizada a acurácia balanceada como métrica da qualidade do classificador (média dos \emph{recalls} de cada classe).
+        Aparentemente o desbalanço entre as classes não é significativo, mas existe (figura \ref{fig:numero_por_classe}). A menor classe tem cerca de 30\% menos amostras que a maior classe. De toda forma será utilizada a \textbf{acurácia balanceada} como métrica da qualidade do classificador (média dos \emph{recalls} de cada classe).
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{A_LabelCount.png}
@@ -289,6 +287,7 @@
         \end{figure}
 
     \subsection{Dados Pré-processados}
+
         Os dados pré-processados estão normalizados no intervalo $[-1;1]$, à exceção de alguns dos atributos (figura \ref{fig:dados_preprocessados}). Desta forma, em um primeiro momento não existe necessidade de normalizar os dados.
 
         \begin{figure}[hbt!]
@@ -297,7 +296,7 @@
             \label{fig:dados_preprocessados}
         \end{figure}
 
-        \subsubsection{Regressão Logística}
+    \subsubsection{Regressão Logística}
 
         O classificador de regressão logística foi construído com a classe \href{https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegressionCV.html}{\textbf{LogisticRegressionCV}} do \emph{Scikit-Learn}. Esta classe realiza a otimização do parâmetro de regularização junto com validação cruzada. Foram utilizadas as seguintes opções para o ajuste deste modelo:
 
@@ -308,15 +307,17 @@
             \item Estratégia: multinomial (entropia cruzada\footnote{Equivalente a utilizar \emph{Softmax}.}).
         \end{enumerate}
 
-        O modelo ajustado tem $l_2 = 0.3594$. A acurácia balanceada na validação cruzada foi de $0.9932$, e com os dados de teste $0.9598$.
+        O modelo ajustado tem $l_2 = 0.3594$. A acurácia balanceada na validação cruzada foi de $0.9932$, e com os dados de teste $0.9598$. Observa-se que o classificador tem um bom desempenho, e que o F1-score também seria uma boa escolha para avaliar a qualidade dos classificadores. (tabela \ref{tab:resultados_logistico_preprocessados}).
+
+        Ao analisar por classe, fica claro que o desempenho não é uniforme. A classe \textbf{Sentado} tem um valor de \emph{recall} bem mais baixo que as demais, pois o classificador tem dificuldade em distinguir \textbf{Sentado} de \textbf{Em pé} (figura \ref{fig:cm_logistico_preprocessados}).
 
         \begin{table}[h]
             \centering
             \begin{tabular}{l c c}
                 \toprule
-                \textbf{Classe} & \textbf{Recall}  & \textbf{F1 score} \\
+                \textbf{Classe} & \textbf{\emph{Recall}}  & \textbf{\emph{F1 score}} \\
                 \midrule
-                Todas     & $0.9598$ & $0.9606$ \\
+                Todas\tablefootnote{\emph{Recall} médio é a acurácia balanceada.}  & $0.9598$ & $0.9606$ \\
                 \addlinespace
                 Caminhar   & $0.9940$ & $0.9686$ \\
                 Subir escadas   & $0.9427$ & $0.9569$ \\
@@ -326,22 +327,95 @@
                 Deitado    & $1.0000$ & $1.0000$ \\
                 \bottomrule
             \end{tabular}
-            \caption{Resultados do classificador com regressão logística.}
-            \label{tab:total_dados}
+            \caption{Resultados do classificador com regressão logística para os dados pré-processados.}
+            \label{tab:resultados_logistico_preprocessados}
         \end{table}
 
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{A_Logistic_CM.png}
+            \caption{Matriz de confusão do classificador com regressão logística para os dados pré-processados.}
+            \label{fig:cm_logistico_preprocessados}
+        \end{figure}
+
+    \subsubsection{k-Vizinhos mais Próximos}
+
+        Na primeira tentativa de construção de um classificador com k-Vizinhos mais Próximos (\emph{kNN}) foram utilizadas as opções padrão da classe \href{https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html}{KNeighborsClassifier} do \emph{Scikit-Learn}: distância euclidiana e pesos uniformes. Novamente foi utilizada a validação cruzada estratificada em 5 pastas.
+
+        O valor ótimo de \textbf{k} ficou em 17 (figura \ref{fig:knn_melhor_k_preprocessados}). Este classificador com opções padrão (\emph{Vanilla}) ficou com acurácia balanceada na validação cruzada igual a $0.8999$, e com os dados de teste igual a $0.8999$\footnote{A coincidência de valores levantou suspeitas quanto ao código desenvolvido. O código foi verificado mais de uma vez, e nenhum erro foi encontrado. Os valores diferem na quinta casa decimal.}. Este classificador teve resultados inferiores ao do classificador com regressão logística (tabela \ref{tab:resultados_knn_vanilla_preprocessados}). Os resultados foram priores em todas as classes.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{A_kNN_bestK.png}
+            \caption{Otimização do parâmetro \textbf{k} do classificador com k-Vizinhos mais Próximos para os dados pré-processados.}
+            \label{fig:knn_melhor_k_preprocessados}
+        \end{figure}
+
+        \begin{table}[h]
+            \centering
+            \begin{tabular}{l c c}
+                \toprule
+                \textbf{Classe} & \textbf{\emph{Recall}}  & \textbf{\emph{F1 score}} \\
+                \midrule
+                Todas & $0.8999$ & $0.9017$ \\
+                \addlinespace
+                Caminhar   & $0.9839$ & $0.9104$ \\
+                Subir escadas   & $0.9108$ & $0.9022$ \\
+                Descer escadas & $0.7667$ & $0.8530$ \\
+                Sentado   & $0.7984$ & $0.8578$ \\
+                Em pé  & $0.9436$ & $0.8885$ \\
+                Deitado    & $0.9963$ & $0.9981$ \\
+                \bottomrule
+            \end{tabular}
+            \caption{Resultados do classificador com k-Vizinhos mais Próximos para os dados pré-processados.}
+            \label{tab:resultados_knn_vanilla_preprocessados}
+        \end{table}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{A_kNN_Vanilla_CM.png}
+            \caption{Matriz de confusão do classificador com k-Vizinhos mais Próximos para os dados pré-processados.}
+            \label{fig:cm_knn_vanilla_preprocessados}
+        \end{figure}
+
+        Dada a menor performance do classificador com k-Vizinhos mais Próximos, foram realizados alguns testes para tentar melhorar o seu resultado. A primeira tentativa foi uma busca em grade ao redor do melhor \textbf{k} encontrado, buscando os melhores hiperparâmetros para o classificador de k-Vizinhos mais Próximos. Foram testados diferentes valores de \textbf{p} para a métrica de Minkowski e o uso de pesos ponderados pelo inverso da distância (tabela \ref{tab:parâmetros_knn}). O classificador com os hiperparâmetros ótimos (\emph{kNN opt1}) mostrou um pequeno ganho na acurácia balanceada: $0.9045$ na validação cruzada e $0.9146$ nos dados de teste.
+
+        \begin{table}[h]
+            \centering
+            \begin{tabular}{l c c}
+                \toprule
+                \textbf{Hiperparâmetro} & \textbf{Padrão (\emph{Vanilla})}  & \textbf{Otimizado} \\
+                \midrule
+                Distância    & Euclidiana & Manhattan \\
+                Pesos    & Uniforme & Distância \\
+                \bottomrule
+            \end{tabular}
+            \caption{Hiperparâmetros do classificador k-Vizinhos mais Próximos.}
+            \label{tab:parâmetros_knn}
+        \end{table}
+
+        Como alguns dos dados de entrada não estava \emph{exatamente} escalados em [-1;1], a segunda tentativa foi aplicar uma escala [0;1] aos dados pré-processados. O resultado foi um pequeno incremento na acurácia balanceada: $0.9059$ na validação cruzada e $0.9153$ nos dados de teste.
+
+        A última etapa na busca por um classificador com k-Vizinhos mais Próximos de melhores resultados foi avaliar os parâmetros de entrada. Foi feita uma otimização \emph{gulosa} dos parâmetros que são utilizados na construção do classificador de k-Vizinhos mais Próximos. A cada iteração são avaliados todos os parâmetros de entrada. A cada passo é retirado um dos parâmetros de entrada e o modelo é reconstruído. Se a acurácia balanceada aumentar, este parâmetro é retirado permamentemente. O algoritmo termina quando nenhum parâmetro é retirado em uma iteração.
+
+        Para este estudo foi feita apenas uma iteração, ou seja, a retirada de cada atributo foi testada uma única vez. Este procedimento excluiu 65 dos 561 atributos, e levou a uma acurácia balanceada de $0.9218$ na validação cruzada e de $0.9192$ nos dados de teste.
+
+        Uma possível etapa adicional seria a otimização do \emph{peso} de cada atributo. Este procedimento seria a otimização de 496 pesos. Devido ao custo computacional envolvido em uma otimização de tantos parâmetros, optou-se por considerar a avaliação concluída.
+
+        Foi possível melhorar os resultados com relação a otimizar apenas o número de vizinhos, mas o incremento foi relativamente pequeno. Os resultados com os dados de teste geralmente seguiram os incrementos nos resultados com a validação cruzada. Em todas as tentativas os resultados ficaram abaixo daqueles do classificador com regressão logística.
+
+    \subsection{Dados Brutos}
+
+        Os dados brutos de aceleração e do giroscópio nas três direções levam a um conjunto de dados com 768 atributos. Os dados não estão normalizados (figura \ref{fig:dados_brutos}). Os dados pré-processados estavam \emph{aproximadamente} em $[-1;1]$ e foi pequeno, para o modelo de k-Vizinhos mais Próximos, o ganho de mudar a escala para $[0;1]$. Os dados brutos foram escalados para $[-1;1]$.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{B_Dataset_Scale.png}
+            \caption{Limites dos atributos do conjunto de treinamento dos dados brutos.}
+            \label{fig:dados_brutos}
+        \end{figure}
 
 
-        \subsubsection{Primeiro Modelo de Classificação}
 
-        \subsubsection{Normalização dos Dados}
+    \subsubsection{Regressão Logística}
 
-        \subsubsection{Busca pelo Melhor Modelo}
-
-        \subsubsection{Erros com os Dados de Teste} \label{sec:testes_modelo}
-
-
-    \subsection{Segundo Modelo de Regressão}
+    \subsubsection{k-Vizinhos mais Próximos}
 
 
 \section{Conclusão}
