@@ -499,14 +499,28 @@
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{C_PrincipalComponents.png}
-            \caption{Dados pré-processados nas direções dos cinco maiores componentes principais.}
+            \caption{Dados pré-processados nas direções dos quatro maiores componentes principais.}
             \label{fig:pc_preprocessados}
         \end{figure}
 
         \begin{figure}[hbt!]
             \includegraphics[width=0.95\columnwidth]{C_PrincipalComponents_Raw.png}
-            \caption{Dados brutos nas direções dos cinco maiores componentes principais.}
+            \caption{Dados brutos nas direções dos quatro maiores componentes principais.}
             \label{fig:pc_brutos}
+        \end{figure}
+
+        Foi realizada uma segunda tentativa de visualização dos dados em dimensão reduzida, agora utilizando \href{https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html}{t-SNE} \cite{van2008visualizing}. O gráfico dos dados preprocessados (figura \ref{fig:t_sne_preprocessados}) \emph{conversa} bem com os resultados anteriores, mostrando que existe uma possibilidade de separação linear entre as classes, e que a distinção entre \emph{Em pé} e \emph{Sentado} é mais complicada. O gráfico com os dados brutos (figura \ref{fig:t_sne_brutos}) mostra três classes sobrepostas (\emph{Em pé}, \emph{Sentado} e \emph{Deitado}). Algumas das classes até estão em regiões melhor definidas (\emph{Caminhar} e \emph{Subir escada}), mas com fronteiras não-lineares.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C_t-SNE.png}
+            \caption{Dados pré-processados em dimensão reduzida com t-SNE.}
+            \label{fig:t_sne_preprocessados}
+        \end{figure}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{C_t-SNE_raw.png}
+            \caption{Dados brutos em dimensão reduzida com t-SNE.}
+            \label{fig:t_sne_brutos}
         \end{figure}
 
 \section{Conclusão}
