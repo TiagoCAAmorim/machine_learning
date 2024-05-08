@@ -215,7 +215,7 @@
 
 \section{Tarefa Proposta}
 
-    Nesta atividade, vamos abordar o problema de reconhecimento de células sanguíneas periféricas utilizando a base de dados BloodMNIST \cite{acevedo2020dataset,yang2110v2} (\href{https://medmnist.com/}{https://medmnist.com/}), a qual possui 17.092 imagens microscópicas coloridas (3 canais de cor). O mapeamento entre os identificadores das classes e os rótulos está indicado na Tabela \ref{tab:rotulos}.
+    Nesta atividade, vamos abordar o problema de reconhecimento de células sanguíneas periféricas utilizando a base de dados BloodMNIST \cite{medmnistv1,medmnistv2, acevedo2020dataset} (\href{https://medmnist.com/}{https://medmnist.com/}), a qual possui 17.092 imagens microscópicas coloridas (3 canais de cor). O mapeamento entre os identificadores das classes e os rótulos está indicado na Tabela \ref{tab:rotulos}.
 
     \begin{table}[h]
         \centering
@@ -273,6 +273,24 @@
 
 \section{Análise dos Resultados}
 
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{l l c}
+            \toprule
+            \textbf{Método} & \textbf{AUC}\tablefootnote{AUC = \emph{Area Under Curve}. É a área sob a curva da Taxa de Verdadeiros Positivos (\emph{Recall}) em função da Taxa de Falsos Positivos (1-\emph{Especificidade}).} & \textbf{Acurácia} \\
+            \midrule
+            ResNet-18 (28) & 0.998 & 0.958 \\
+            ResNet-18 (224) & 0.998 & 0.963 \\
+            ResNet-50 (28) & 0.997 & 0.956 \\
+            ResNet-50 (224) & 0.997 & 0.950 \\
+            auto-sklearn & 0.984 & 0.878 \\
+            AutoKeras & 0.998 & 0.961 \\
+            Google AutoML Vision & 0.998 & 0.966 \\
+            \bottomrule
+        \end{tabular}
+        \caption{Resultados reportados na publicação original \cite{medmnistv2}.}
+        \label{tab:resultados_paper}
+    \end{table}
 
 \section{Conclusão}
 
