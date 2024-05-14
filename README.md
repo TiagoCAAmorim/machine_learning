@@ -8,3 +8,7 @@ Regularized least squares on time-series prediction.
 ## Lista02: [Linear Classification](Lista02\Report\Lista02.pdf)
 
 Logistic regression and kNN on sensor data classification.
+
+## Lista03: [Neural Net Classification](Lista03\Report\Lista03.pdf)
+
+Neural networks (MLP, CNN, ResNet-_like_) for image classification.
