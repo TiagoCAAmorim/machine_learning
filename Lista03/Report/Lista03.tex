@@ -263,9 +263,81 @@
 
 \section{Aplicação}
 
-    Toda a avaliação foi feita em um único \emph{notebook} Jupyter, em Python. Foi feito o uso da biblioteca \emph{TensorFlow} \cite{tensorflow2015-whitepaper} para fazer as diferentes manipulações nos dados. O código pode ser encontrado em \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista03/Lista03.ipynb}{https://github.com/Tiago CAAmorim/machine\_learning}.
+    A tarefa proposta foi desenvolvida em três \emph{notebooks} Jupyter, em Python, um para cada arquitetura de rede neural utilizada: \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista03/Lista03_MLP.ipynb}{Rede MLP}, \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista03/Lista03_SimpleCNN.ipynb}{Rede Convolucional \emph{Simples}} e \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista03/Lista03_ResNet.ipynb}{Rede Convolucional \emph{Profunda}}. Foi feito o uso das bibliotecas \emph{TensorFlow} \cite{tensorflow2015-whitepaper} para montar as redes neurais e \emph{Scikit-learn} \cite{scikit-learn} para realizar a otimização dos hiperparâmetros.
+
+    O código pode ser encontrado em \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Lista03}{https://github.com/ TiagoCAAmorim/machine\_learning}.
+
+    \subsection{Base de Dados}
+
+    A base \emph{BloodMNIST} foi construída com imagens de diferentes resoluções. Para este exercício foi escolhida a resolução (28, 28). As imagens são classificadas em 8 classes (Figura \ref{fig:amostras_painel}). A base de dados é composta por $17\,092$ amostras, divididas em treino ($11\,959$), validação ($1\,712$) e teste ($3\,421$).
+
+    \begin{figure}[hbt!]
+        \includegraphics[width=0.95\columnwidth]{Samples_panel.png}
+        \caption{Exemplos de imagens por classe.}
+        \label{fig:amostras_painel}
+    \end{figure}
+
+    Os conjuntos de dados de treino e validação não são bem distribuídos entre as classes (Figura \ref{fig:amostras_contagem}). Algumas classes tem mais que o dobro de imagens que outras. Prevendo um efeito negativo no treinamento, foi proposto utilizar pesos nas diferentes classes (Figura \ref{fig:amostras_pesos}). A proposta foi definir os pesos proporcionais ao inverso do número de classes. O impacto do uso de pesos por classe será avaliado para cada classificador.
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{Samples_count.png}
+            \caption{Número de imagens por classe.}
+            \label{fig:amostras_contagem}
+        \end{figure}
+
+        \begin{figure}[hbt!]
+            \includegraphics[width=0.95\columnwidth]{Samples_weights.png}
+            \caption{Pesos por classe.}
+            \label{fig:amostras_pesos}
+        \end{figure}
 
     \subsection{Rede MLP}
+
+    O primeiro classificador construído é uma rede neural de uma uma camada intermediária (MLP). A rede é composta por uma camada de entrada, uma camada intermediária (com função de ativação não-linear) e uma camada de saída (com função de ativação \emph{softmax}).
+
+    Apesar de ser uma rede simples, diferentes hiperparâmetros foram avaliados para tentar encontrar um classificador mais eficiente. A avaliação dos hiperparâmetros foi feita com busca em grade (\emph{GridSearch}).
+
+    Como o número de possíveis combinações é alto, a busca foi feita em subconjuntos de hiperparâmetros. A partir de um subconjunto de hiperparâmetros pré-estabelecido, é feita a otimização de uma parte dos hiperparâmetros. Ao final de cada passo o subconjunto de hiperparâmetros é atualizado com os valores ótimos encontrados. A Tabela \ref{tab:parametros_MLP} mostra a ordem e os subconjuntos de hiperparâmetros (separados por linhas horizontais).
+
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{l c}
+            \toprule
+            \textbf{Hiperparâmetro} & \textbf{Opções} \\
+            \midrule
+            Usar \emph{data augmentation} & \underline{Sim}, Não \\
+            Usar pesos por classe & Sim, \underline{Não} \\
+            \midrule
+            Número de neurônios & 64, \underline{128}, 256, 512, 1024 \\
+            \midrule
+            Otimizador & \underline{SGD}, RMSprop, Adam \\
+            Função de ativação & \underline{relu}, tanh \\
+            Tamanho do \emph{batch} & \underline{16}, 32, 64, 128 \\
+            \bottomrule
+        \end{tabular}
+        \caption{Hiperparâmetros da rede MLP (parâmetros ótimos sublinhados).}
+        \label{tab:parametros_MLP}
+    \end{table}
+
+    O ajuste de cada classificador foi feito por até 50 épocas, com parada antecipada (\emph{early stopping}) caso a acurácia dos dados de validação não melhore após 10 épocas. O classificador ajustado utiliza os pesos que deram a maior acurácia dos dados de validação durante o processo de ajuste.
+
+    Na busca em grade foi aplicada validação cruzada estratificada em 3 pastas (\emph{StratifiedKFold}) nos dados de treino, com entropia cruzada como função objetivo. A métrica de definição do melhor classificador é a média da acurácia dos dados de validação. Para adequar o custo computacional ao \emph{hardware} disponível, a busca em grade foi limitada a 40\% dos dados de treino e validação.
+
+     Figura \ref{fig:mlp_neuronios} mostra o impacto do número de neurônios da camada intermediária na acurácia média com os dados de validação.
+
+     \begin{figure}[hbt!]
+         \includegraphics[width=0.95\columnwidth]{MLP_neurons.png}
+         \caption{Efeito médio do número de neurônios da camada intermediária na acurácia da rede MLP (barras de erro são iguais ao desvio padrão estimado com validação cruzada).}
+         \label{fig:mlp_neuronios}
+     \end{figure}
+
+     Uma nova rede MLP foi treinada com os hiperparâmetros ótimos, agora por até 200 épocas. Foi utilizado como critério de parada antecipada verificar se a acurácia dos dados de validação não melhora após 20 épocas.
+
+    \begin{figure}[hbt!]
+        \includegraphics[width=0.95\columnwidth]{MLP_model.png}
+        \caption{Modelo MLP utilizado.}
+        \label{fig:modelo_MLP}
+    \end{figure}
 
     \subsection{Rede Convolucional \emph{Simples}}
 
