@@ -452,85 +452,144 @@
 
     \subsection{Rede Convolucional \emph{Profunda}}
 
-    A rede convolucional \emph{Profunda} construída se baseou na arquitetura ResNet \cite{he2015deep}. A resolução das imagens utilizadas nesta avaliação (28x28) é menor que a das imagens de entrada utilizadas na proposta original das ResNet (224x224). Em função desta diferença no tamanho das imagens, e para evitar uma \emph{explosão} no número de parâmetros, foi construída uma versão simplificada dos blocos propostos para a ResNet-18.
+    A rede convolucional \emph{Profunda} construída se baseou na arquitetura \textbf{\emph{ResNet}} \cite{he2015deep}. A resolução das imagens utilizadas nesta avaliação (28x28) é menor que a das imagens de entrada utilizadas na proposta original das ResNet (224x224). Em função desta diferença no tamanho das imagens, e para evitar uma \emph{explosão} no número de parâmetros, foi construída uma versão simplificada dos blocos propostos para a ResNet-18.
 
+    Dado o alto custo computacional de treinar a rede neural proposta, não foi feita uma otimização dos hiperparâmetros. Os hiperparâmetros foram definidos de forma a limitar o número de parâmetros treináveis. A rede \emph{ResNet} construída consiste de (hiperparâmetros utilizados entre parênteses):
 
+    \begin{enumerate}
+        \item Camada convolucional inicial (64 filtros 3x3).
+        \item Camada de \emph{max pooling} com janela 3x3 (não utilizada).
+        \item Blocos residuais (2 blocos):
+        \begin{enumerate}
+            \item Duplica o número de filtros.
+            \item Camada convolucional inicial com \emph{stride} igual a 2 (3x3).
+            \item Camadas convolucionais (3 camadas 3x3).
+            \item Camada convolucional 1x1 com \emph{stride} igual a 2 aplicada no dado de entrada do bloco.
+            \item Soma das saídas das camadas 3x3 com as saídas da camada 1x1.
+            \item Aplicada função de ativação (relu).
+        \end{enumerate}
+        \item Camada de \emph{Global Average Pooling}.
+        \item Camada densa (ativação relu).
+        \item Camada densa de saída.
+    \end{enumerate}
 
-    Dado o alto custo computacional de treinar a rede neural proposta, não foi feita uma otimização dos hiperparâmetros. Os hiperparâmetros foram definidos de forma a limitar o número de parâmetros treináveis.
+    Todas as camadas convolucionais e de \emph{pooling} utilizam \emph{padding} para buscar manter o tamanho das figuras. Em todas as camadas a função de ativação é relu, exceto na camada de saída, que utiliza \emph{softmax}. Ao final de cada camada convolucional é feita \emph{batch normalization} antes de aplicar a função de ativação.
 
+    No início de cada bloco residual é duplicado o número de filtros, e o tamanho da figura é reduzido pela metade (\emph{stride} 2 na primeira camada do bloco). Devido à mudança no tamanho da figura, a \emph{skip connection} não utiliza a matriz identidade. É aplicada uma camada convolucional com filtro 1x1 e \emph{stride} 2 para que as saídas tenham mesma dimensão e possam ser somadas.
 
+    Em face dos resultados anteriores, foi utilizado \emph{data augmentation} nesta rede, e não foram utilizados pesos por classe. A rede é apresentada visualmente nas Figuras \ref{fig:ModeloCNNupper} e \ref{fig:ModeloCNNlower}.
 
-\section{Análise dos Resultados}
+    A rede tem $1\,957\,768$ parâmetros treináveis. Foram utilizados os mesmos critérios de ajuste e parada antecipada das redes anteriores. A rede foi ajustada por 58 épocas (Figura \ref{fig:HistoricoResNet}).
+
+    A curva da acurácia no conjunto de validação tem um comportamento mais \emph{errático} que o observado nos gráficos das demais redes. Este comportamento indica que o critério de parada prematura não é adequado para esta rede mais complexa, e que possivelmente um número maior de épocas levaria a um resultado melhor.
+
+    A acurácia do rede \emph{ResNet} com os dados de teste ficou em $0.9547$. A acurácia teve um novo incremento significativo comparado com as demais redes. Apenas a acurácia da classe Plaquetas não melhorou com relação à rede CNN(Figura \ref{fig:MatrizConfusaoResNet} e Tabela \ref{tab:ResultadosResNet}).
+
+    \begin{figure}[hbt!]
+        \includegraphics[width=0.95\columnwidth]{ResNet_history_cropped.png}
+        \caption{Histórico de ajuste da rede \emph{ResNet}.}\label{fig:HistoricoResNet}
+    \end{figure}
+
+    \begin{figure}[hbt!]
+        \includegraphics[width=0.95\columnwidth]{ResNet_cm.png}
+        \caption{Matrix de confusão da rede \emph{ResNet}.}\label{fig:MatrizConfusaoResNet}
+    \end{figure}
+
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{l c c}
+            \toprule
+            \textbf{Classe} & \textbf{Acurácia} \\
+            \midrule
+            Todas & $0.9547$ \\
+            \addlinespace
+            Basófilos  & $0.8730$ \\
+            Eosinófilos  & $0.9872$ \\
+            Eritroblastos  & $0.9743$ \\
+            Granulócitos imaturos  & $0.9378$ \\
+            Linfócitos  & $0.9383$ \\
+            Monócitos  & $0.8732$ \\
+            Neutrófilos  & $0.9715$ \\
+            Plaquetas  & $0.9957$ \\
+            \bottomrule
+        \end{tabular}
+        \caption{Resultados da rede \emph{ResNet} com os dados de teste.}\label{tab:ResultadosResNet}
+    \end{table}
+
+    O histograma da ordem associada à classe verdadeira dos dados de teste (Figura \ref{fig:HistogramaErrosResNet}) está mais concentrado nos valores 2 e 3 que os histogramas das demais redes. Este resultado indica que esta rede tem potencial para gerar melhores resultados por uma otimização dos hiperparâmetros e/ou um número maior de épocas no processo de ajuste.
+
+    \begin{figure}[hbt!]
+        \includegraphics[width=0.95\columnwidth]{ResNet_rank.png}
+        \caption{Histograma da ordem associada à classe verdadeira para as classificações errôneas com a rede \emph{ResNet}.}\label{fig:HistogramaErrosResNet}
+    \end{figure}
+
+    \section{Conclusão}
+
+    A Tabela \ref{tab:resultados_resumo} resume os resultados principais. Fica claro que, para o problema proposto, é eficiente o uso de camadas convolucionais e de redes profundas. A rede \emph{ResNet} construída teve acurácia comparável às reportadas para redes mais profundas.
 
     \begin{table}[h]
         \centering
         \begin{tabular}{l l c}
             \toprule
-            \textbf{Método} & \textbf{AUC}\tablefootnote{AUC = \emph{Area Under Curve}. É a área sob a curva da Taxa de Verdadeiros Positivos (\emph{Recall}) em função da Taxa de Falsos Positivos (1-\emph{Especificidade}).} & \textbf{Acurácia} \\
+            \textbf{Rede} & \textbf{Acurácia} \\
             \midrule
-            ResNet-18 (28) & 0.998 & 0.958 \\
-            ResNet-18 (224) & 0.998 & 0.963 \\
-            ResNet-50 (28) & 0.997 & 0.956 \\
-            ResNet-50 (224) & 0.997 & 0.950 \\
-            auto-sklearn & 0.984 & 0.878 \\
-            AutoKeras & 0.998 & 0.961 \\
-            Google AutoML Vision & 0.998 & 0.966 \\
+            ResNet-18 (28) & $0.958$ \\
+            ResNet-18 (224) & $0.963$ \\
+            ResNet-50 (28) & $0.956$ \\
+            ResNet-50 (224) & $0.950$ \\
+            auto-sklearn & $0.878$ \\
+            AutoKeras & $0.961$ \\
+            Google AutoML Vision & $0.966$ \\
+            \midrule
+            MLP & $0.799$ \\
+            CNN & $0.907$ \\
+            \emph{ResNet} & $0.955$ \\
             \bottomrule
         \end{tabular}
-        \caption{Resultados reportados na publicação original \cite{medmnistv2}.}
-        \label{tab:resultados_paper}
+        \caption{Resultados reportados na publicação original \cite{medmnistv2} em comparação com as redes construídas nesta atividade.}
+        \label{tab:resultados_resumo}
     \end{table}
-
-\section{Conclusão}
-
 
 \appendix
 
-% \section{Lista de Variáveis}
+    \section{Redes Neurais Construídas}
 
-    % \begin{description}
-    %     \item[$X$:] xxxxxxxxxxx.
-    % \end{description}
+        \begin{figure}[H]
+            \includegraphics[width=0.95\columnwidth]{MLP_model.png}
+            \caption{Rede MLP.}\label{fig:ModeloMLP}
+        \end{figure}
 
+        \begin{figure}[H]
+            \includegraphics[width=0.95\columnwidth]{CNN_Simple_model.png}
+            \caption{Rede CNN.}\label{fig:ModeloCNN}
+        \end{figure}
 
-\section{Redes Neurais Construídas}
+        \begin{figure}[H]
+            \includegraphics[width=0.95\columnwidth]{ResNet_model_upper.png}
+            \caption{Início e primeiro bloco residual da rede \emph{ResNet}.}\label{fig:ModeloCNNupper}
+        \end{figure}
 
-\begin{figure}[H]
-    \includegraphics[width=0.95\columnwidth]{MLP_model.png}
-    \caption{Rede MLP.}\label{fig:ModeloMLP}
-\end{figure}
+        \begin{figure}[H]
+            \includegraphics[width=0.95\columnwidth]{ResNet_model_lower.png}
+            \caption{Segundo bloco residual e final da rede \emph{ResNet}.}\label{fig:ModeloCNNlower}
+        \end{figure}
 
-\begin{figure}[H]
-    \includegraphics[width=0.95\columnwidth]{CNN_Simple_model.png}
-    \caption{Rede CNN.}\label{fig:ModeloCNN}
-\end{figure}
+    \section{Exemplos de Classificações Errôneas}
 
-\begin{figure}[H]
-    \includegraphics[width=0.95\columnwidth]{ResNet_model_upper.png}
-    \caption{Início e primeiro bloco residual da rede \emph{ResNet}.}\label{fig:ModeloCNNupper}
-\end{figure}
+        \begin{figure}[H]
+            \includegraphics[width=0.8\columnwidth]{MLP_fails.png}
+            \caption{Exemplos de classificações errôneas com a rede MLP.}\label{fig:ErrosMLP}
+        \end{figure}
 
-\begin{figure}[H]
-    \includegraphics[width=0.95\columnwidth]{ResNet_model_lower.png}
-    \caption{Segundo bloco residual e final da rede \emph{ResNet}.}\label{fig:ModeloCNNlower}
-\end{figure}
+        \begin{figure}[H]
+            \includegraphics[width=0.8\columnwidth]{CNN_Simple_fails.png}
+            \caption{Exemplos de classificações errôneas com a rede CNN.}\label{fig:ErrosCNN}
+        \end{figure}
 
-\section{Exemplos de Classificações Errôneas}
-
-\begin{figure}[H]
-    \includegraphics[width=0.8\columnwidth]{MLP_fails.png}
-    \caption{Exemplos de classificações errôneas com o modelo MLP.}\label{fig:ErrosMLP}
-\end{figure}
-
-\begin{figure}[H]
-    \includegraphics[width=0.8\columnwidth]{CNN_Simple_fails.png}
-    \caption{Exemplos de classificações errôneas com o modelo CNN.}\label{fig:ErrosCNN}
-\end{figure}
-
-\begin{figure}[H]
-    \includegraphics[width=0.8\columnwidth]{ResNet_fails.png}
-    \caption{Exemplos de classificações errôneas com o modelo \emph{ResNet}.}\label{fig:ErrosResNet}
-\end{figure}
+        \begin{figure}[H]
+            \includegraphics[width=0.8\columnwidth]{ResNet_fails.png}
+            \caption{Exemplos de classificações errôneas com a rede \emph{ResNet}.}\label{fig:ErrosResNet}
+        \end{figure}
 
 %% \label{}
 
