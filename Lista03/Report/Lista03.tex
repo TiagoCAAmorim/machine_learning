@@ -452,7 +452,13 @@
 
     \subsection{Rede Convolucional \emph{Profunda}}
 
-    A rede convolucional \emph{Profunda} construída se baseou na arquitetura ResNet \cite{he2015deep}. Para evitar uma \emph{explosão} no número de parâmetros, foi construída uma versão simplificada dos blocos propostos para a ResNet-28.
+    A rede convolucional \emph{Profunda} construída se baseou na arquitetura ResNet \cite{he2015deep}. A resolução das imagens utilizadas nesta avaliação (28x28) é menor que a das imagens de entrada utilizadas na proposta original das ResNet (224x224). Em função desta diferença no tamanho das imagens, e para evitar uma \emph{explosão} no número de parâmetros, foi construída uma versão simplificada dos blocos propostos para a ResNet-18.
+
+
+
+    Dado o alto custo computacional de treinar a rede neural proposta, não foi feita uma otimização dos hiperparâmetros. Os hiperparâmetros foram definidos de forma a limitar o número de parâmetros treináveis.
+
+
 
 \section{Análise dos Resultados}
 
