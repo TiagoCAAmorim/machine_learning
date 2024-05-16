@@ -479,11 +479,11 @@
 
     Em face dos resultados anteriores, foi utilizado \emph{data augmentation} nesta rede, e não foram utilizados pesos por classe. A rede é apresentada visualmente nas Figuras \ref{fig:ModeloCNNupper} e \ref{fig:ModeloCNNlower}.
 
-    A rede tem $1\,957\,768$ parâmetros treináveis. Foram utilizados os mesmos critérios de ajuste e parada antecipada das redes anteriores. A rede foi ajustada por 58 épocas (Figura \ref{fig:HistoricoResNet}).
+    A rede tem $1\,957\,768$ parâmetros treináveis. Foram utilizados os mesmos critérios de ajuste e parada antecipada das redes anteriores. A rede foi ajustada por 102 épocas (Figura \ref{fig:HistoricoResNet}).
 
     A curva da acurácia no conjunto de validação tem um comportamento mais \emph{errático} que o observado nos gráficos das demais redes. Este comportamento indica que o critério de parada prematura não é adequado para esta rede mais complexa, e que possivelmente um número maior de épocas levaria a um resultado melhor.
 
-    A acurácia do rede \emph{ResNet} com os dados de teste ficou em $0.9547$. A acurácia teve um novo incremento significativo comparado com as demais redes. Apenas a acurácia da classe Plaquetas não melhorou com relação à rede CNN(Figura \ref{fig:MatrizConfusaoResNet} e Tabela \ref{tab:ResultadosResNet}).
+    A acurácia do rede \emph{ResNet} com os dados de teste ficou em $0.9608$. A acurácia teve um novo incremento significativo comparado com as demais redes. Apenas a acurácia da classe Plaquetas não melhorou com relação à rede CNN(Figura \ref{fig:MatrizConfusaoResNet} e Tabela \ref{tab:ResultadosResNet}).
 
     \begin{figure}[hbt!]
         \includegraphics[width=0.95\columnwidth]{ResNet_history_cropped.png}
@@ -501,15 +501,15 @@
             \toprule
             \textbf{Classe} & \textbf{Acurácia} \\
             \midrule
-            Todas & $0.9547$ \\
+            Todas & $0.9608$ \\
             \addlinespace
-            Basófilos  & $0.8730$ \\
-            Eosinófilos  & $0.9872$ \\
-            Eritroblastos  & $0.9743$ \\
+            Basófilos  & $0.9426$ \\
+            Eosinófilos  & $0.9968$ \\
+            Eritroblastos  & $0.9582$ \\
             Granulócitos imaturos  & $0.9378$ \\
-            Linfócitos  & $0.9383$ \\
-            Monócitos  & $0.8732$ \\
-            Neutrófilos  & $0.9715$ \\
+            Linfócitos  & $0.8889$ \\
+            Monócitos  & $0.9155$ \\
+            Neutrófilos  & $0.9760$ \\
             Plaquetas  & $0.9957$ \\
             \bottomrule
         \end{tabular}
@@ -543,7 +543,7 @@
             \midrule
             MLP & $0.799$ \\
             CNN & $0.907$ \\
-            \emph{ResNet} & $0.955$ \\
+            \emph{ResNet} & $0.961$ \\
             \bottomrule
         \end{tabular}
         \caption{Resultados reportados na publicação original \cite{medmnistv2} em comparação com as redes construídas nesta atividade.}
