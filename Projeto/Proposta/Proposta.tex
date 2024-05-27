@@ -164,13 +164,13 @@
 %%             state={},
 %%             country={}}
 
-\author[label1]{Tiago C A Amorim (RA: 100675)}
+\author[label1]{Tiago Corrêa de Araújo de Amorim (RA: 100675) \texttt{t100675@dac.unicamp.br}}
 \affiliation[label1]{organization={Doutorando no Departamento de Engenharia de Petróleo da Faculdade de Engenharia Mecânica, UNICAMP},
             city={Campinas},
             state={SP},
             country={Brasil}}
 
-\author[label2]{Taylon L C Martins (RA: 177379)}
+\author[label2]{\\Taylon Luan Congio Martins (RA: 177379) \texttt{t177379@m.unicamp.br}}
 \affiliation[label2]{organization={Aluno especial, UNICAMP},
             city={Campinas},
             state={SP},
@@ -207,21 +207,21 @@
 %% main text
 \section{Introdução}
 
-    Na indústria do petróleo é comum o uso de simuladores de fluxo tridimensionais para realizar a previsão de produção de acumulações de hidrocarbonetos \cite{rosa2006engenharia,dake1983fundamentals}. Estas simulações são empregadas em diferentes análises, desde a avaliação de valor para aquisição de blocos exploratórios, passando pelo planejamento de novos campos e planejamento de operações ao longo do desenvolvimento de um projeto já implantado.
+    Na indústria do petróleo é comum o uso de simuladores de fluxo tridimensionais para realizar a previsão de produção de acumulações de hidrocarbonetos \cite{rosa2006engenharia,dake1983fundamentals}. Estas simulações são empregadas em diferentes análises, desde a avaliação de valor para aquisição de blocos exploratórios, passando pelo planejamento de novos campos e, entre outros, a otimização de operações ao longo da explotação.
 
-    O nível de sofisticação das formulações empregadas e o tamanho dos modelos de fluxo dependem das caracteríticas dos fluidos originais, técnicas utilizadas na extração de hidrocarbonetos, o tamanho e a heterogeneidade da acumulação. Mesmo fazendo uso de recursos de HPC \cite{10.2118/149132-MS}, as simulações de fluxo de campos gigantes podem tomar dias para serem concluídas.
+    O nível de sofisticação das formulações empregadas e o tamanho dos modelos de fluxo dependem das caracteríticas dos fluidos originais, técnicas utilizadas na extração de hidrocarbonetos, o tamanho e a heterogeneidade da acumulação. Mesmo fazendo uso de recursos de HPC, as simulações de fluxo de campos gigantes podem tomar dias para serem concluídas \cite{10.2118/149132-MS}.
 
     Diferentes proposta já foram feitas para tentar substituir parte da simulação de fluxo utilizando técnicas \emph{tradicionais} \cite{amorim2012risk} ou baseadas em inteligência artificial \cite{ertekin2019artificial}. Entre as diferentes propostas feitas com o uso de redes neurais é mais comum o foco em realizar novas previsões a partir de séries temporais \cite{de2022data, davtyan2020oil, kim2021recurrent} ou de modelos de fluxo completos \cite{cirac2023deep}.
 
-    Uma proposta de arquitetura para aproximar física complexa foca no uso de redes em grafo para simular um passo de tempo \cite{sanchez2020learning}. Nesta rede o objetivo é que se aprenda a resolver o comportamento de um célula (com influência das células vizinhas) em um único passo de tempo. A proposta deste projeto é de aplicar algumas das ideias apresentadas no problema de fluxo em meio poroso.
+    Uma proposta de arquitetura para aproximar física complexa foca no uso de redes em grafo para simular um passo de tempo \cite{sanchez2020learning}. Nesta rede o objetivo é que se aprenda a resolver o comportamento de um célula (ou partícula), dada a influência das células vizinhas, em um único passo de tempo. A proposta deste projeto é de aplicar algumas das ideias apresentadas no problema de fluxo em meio poroso.
 
 \section{Proposta}
 
-    A técnica mais utilizada é a de diferenças finitas \cite{computer2022cmg,schlumberger2009technical}, que é aplicada em uma malha \emph{aproximadamente} regular. O foco deste projeto será limitado a malhas regulares, i.e., o número de vizinhos de cada célula é sempre o mesmo. Desta forma não é necessário o uso de redes em grafo, e camadas convolucionais serão suficientes para buscar representar a influência das células vizinhas.
+    A técnica mais utilizada na simulação de fluxo em meios porosos é a de diferenças finitas \cite{computer2022cmg,schlumberger2009technical}, que é aplicada em uma malha \emph{aproximadamente} regular. O foco deste projeto será limitado a malhas regulares, i.e., para modelos bidimensionais os vizinhos da célula $(i,j)$ são sempre $(i-1,j)$, $(i+1,j)$, $(i,j-1)$ e $(i,j+1)$\footnote{No caso tridimensional são 6 vizinhos.}. Desta forma não é necessário o uso de redes em grafo. Cada célula pode ser entendida como o pixel de uma imagem, e cada propriedade como um canal desta imagem. Camadas convolucionais serão suficientes para buscar representar a influência das células vizinhas.
 
     Como este problema apresenta simetria entre a célula e suas vizinhas, será testado o uso de camadas convolucionais com filtros (\emph{kernels}) com pesos simétricos.
 
-    A arquitetura da rede deve seguir ed forma geral a proposta apresentada em \cite{sanchez2020learning}:
+    A arquitetura da rede deve seguir de forma geral a proposta apresentada em \cite{sanchez2020learning}:
 
     \begin{enumerate}
         \item \textbf{Encoder}: Transforma o estado das células para o espaço latente (filtros 1x1).
@@ -229,11 +229,11 @@
         \item \textbf{Decoder}: Retorna o estado das células para o espaço regular (filtros 1x1).
     \end{enumerate}
 
-    O treinamento será feito com resultados de simulações de um passo de tempo. Na verdade serão gerados resultados intermediários de diferentes simulações, com um dia de diferença entre os resultados.
+    O treinamento será feito com resultados de simulações de um passo de tempo. Para tal serão gerados resultados intermediários de diferentes simulações, com um dia de diferença entre os resultados.
 
     Como a proposta inclui a construção de camadas convolucionais com caracteríticas peculiares, está planejado o uso do pacote Pytorch \cite{paszke2019pytorch}. A base de dados será construída com as saídas de simulações de fluxo baseadas no modelo Unisim IV \cite{botechia2023unisim}. Uma primeira avaliação será feita com modelos bidimensionais. A depender dos resultados o estudo poderá ser extendido para modelos tridimensionais.
 
-    O que se espera é construir uma rede que aprenda a gerar o estado futuro de uma célula em função do seu estado atual e a influência das células vizinhas. Desta forma esta rede pode ser utilizada de modo recursivo para gerar previsões de produção para diferentes valores das propriedades das células e dos mecanismos de controle de poço.
+    O que se espera é construir uma rede que aprenda a gerar o estado futuro de uma célula em função do seu estado atual, dos controles de poços e da influência das células vizinhas. Desta forma esta rede pode ser utilizada de modo recursivo para gerar previsões de produção para diferentes valores das propriedades das células e dos mecanismos de controle de poço.
 
 %% \label{}
 
