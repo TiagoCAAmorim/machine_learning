@@ -210,14 +210,32 @@
 
     \begin{enumerate}[(a)]
         \item (0,8) Explique por que as redes geradora e discriminadora são consideradas adversárias.
-        \item (0,8) Tendo em vista os papeis desempenhados por cada rede, discorra sobre a função custo proposta por Goodfellow et al. (2014)\footnotemark[01] para o treinamento da GAN. Complementando essa análise, comente também sobre como a rede geradora consegue aprender as características típicas dos dados reais.
+        \item (0,8) Tendo em vista os papeis desempenhados por cada rede, discorra sobre a função custo proposta por Goodfellow et al. (2014)\footnote{Goodfellow, I. J., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., Courville, A., Bengio, Y., “Generative Adversarial Networks”, Proceedings of the 27th International Conference on Neural Information Processing Systems (NIPS), pp.2672-2680, 2014.} para o treinamento da GAN. Complementando essa análise, comente também sobre como a rede geradora consegue aprender as características típicas dos dados reais.
     \end{enumerate}
 
-    \footnotetext[01]{Goodfellow, I. J., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., Courville, A., Bengio, Y., “Generative Adversarial Networks”, Proceedings of the 27th International Conference on Neural Information Processing Systems (NIPS), pp.2672-2680, 2014.}
+        \subsection{Resposta \textbf{(a)}}
 
-\section{Questão 2}
+        As redes geradora e discriminadora são consideradas adversárias porque o treinamento dos seus pesos usam objetivos conflitantes. A função objetivo da rede discriminadora é maximizar o número de vezes em que classifica os dados reais como verdadeiros e os dados gerados pela rede geradora como falsos. Já a rede geradora tem como função objetivo maximizar o número de vezes em que a rede discriminadora classifica a saída da rede geradora como verdadeiros.
+
+        \subsection{Resposta \textbf{(b)}}
+
+        A função custo proposta por Goodfellow segue o que foi discutido no item anterior. Os pesos da rede discriminadora são ajustados para maximizar a média do log das saídas da rede discriminadora\footnote{A saída da discriminadora deve ter valores altos para dados reais e baixos para dados gerados.}. Os pesos da rede geradora são ajustados para minimizar a média do log das saídas da rede discriminadora\footnote{Ou seja, busca \emph{enganar} a rede discriminadora para que gere valores altos para os dados gerados.}. Como os objetidos são conflitantes, os autores propõe ajustar os pesos de cada rede de forma intercalada, ou seja, não são ajustados simultaneamente. Ademais, também comentam que existe um balanço delicado entre treinar \emph{demais} a rede discriminadora a ponto de deixar a tarefa da rede geradora \emph{muito difícil}.
+
+        Na proposta original a rede geradora recebe como entrada um vetor aleatório. O que se busca é que a rede geradora consiga mapear este vetor aleatório no espaço de distribuição dos dados reais. Uma rede geradora competente consegue aproximar o espaço de distribuição dos dados reais de forma a se tornar indistinguível do espaço real. Ao conseguir se tornar uma rede competente, a rede geradora estará efetivamente utilizando o vetor de entrada como uma \emph{representação} das principais características dos dados reais.
+
+    \section{Questão 2}
 
     (1,2) Explique os conceitos de mapa de características (feature map), neurônio, campo receptivo e compartilhamento de pesos no contexto de uma camada convolucional de uma CNN (convolutional neural network).
+
+    \subsection{Resposta}
+
+    \begin{itemize}
+        \item \textbf{Mapa de características}:
+        \item \textbf{Neurônio}:
+        \item \textbf{Campo receptivo}:
+        \item \textbf{Compartilhamento de pesos}:
+    \end{itemize}
+
 
 \section{Questão 3}
 
@@ -228,14 +246,28 @@ Tendo em mente a teoria subjacente às máquinas de vetores-suporte (SVMs, do in
         \item (0,5) Por que a formulação matemática relacionada à obtenção do classificador de máxima margem possui similaridades com as ideias de regularização (e.g. Tikhonov / ridge regression) vistas no curso?
     \end{enumerate}
 
+    \subsection{Resposta \textbf{(a)}}
+
+
+    \subsection{Resposta \textbf{(b)}}
+
+
 \section{Questão 4}
 
     (1,2) Numa importante conferência da área de inteligência computacional, foi lançada uma competição no âmbito de um problema de classificação de imagens. Duas jovens pesquisadoras decidiram, então, empregar uma CNN já consolidada na literatura (e.g. uma ResNet) para resolver a tarefa. Partindo de uma inicialização aleatória para os pesos da rede escolhida, e utilizando apenas os dados disponíveis na competição, elas, ao final do treinamento, observaram um nível de acurácia bastante adequado. No entanto, quando exposta a novos padrões de entrada (conjunto de teste), esta rede não atingiu um bom desempenho, tendo ficado muito abaixo das expectativas iniciais de projeto. Recomende (com argumentos bem fundamentados) duas estratégias para amenizar este problema.
+
+    \subsection{Resposta}
+
+    Uma possibilidade é que a base de dados utilizada pelas pesquisadoras não tem tramanho adequado para o treinamento de uma rede muito profunda. Redes como a ResNet são muito profundas, com um número significativo de pesos a serem ajustados. Estas redes funcionam bem porque foram ajustadas com um número \textbf{muito} grande de dados. Uma forma de buscar contornar o problema do limitado número de dados é utilizar \emph{data augmentation}, gerandos amostras adicionais a partir dos próprio dados (rotação, translação, ...). É uma estratégia um pouco limitada, pois depende muito da quantidade de dados disponível, que pode ainda ser insuficiente.
+    Uma estratégia mais interessante é fazer \emph{transfer learning}, ou seja, utilizar os pesos da rede já treinados e adaptar a estrutura da rede para o problema específico. Em diferentes publicações foi explorada a estrutura destas redes \emph{famosas}, verificando que as camadas vão se especializando em elementos cada vez mais complexo à medida que a informação segue pela rede. As primeiras camadas se especializam em formas simples (semi-círculo, linha vertical, ...), e camadas profundas em elementos mais complexos (olho, boca, ...). Boa parte destas atividades podem ser úteis para outros problemas de classificação. Assim é possível utilizar boa parte das primeiras camadas da rede existente, incluir algumas novas camadas e fazer o treinamento dos pesos apenas das novas camadas que foram adicionadas ao final.
 
 \section{Questão 5}
 
     (1,4) Considere o problema de identificação de tumores cerebrais a partir de um conjunto de 1500 imagens de ressonância magnética (MRI) do crânio, de dimensão 200 × 200, em tons de cinza (veja um exemplo na Figura 1).
     As possíveis classes do problema são: (0) glioma; (1) meningioma; (2) pituitário; (3) saudável (normal). Descreva detalhadamente como uma rede MLP (multilayer perceptron), com uma única camada intermediária, poderia ser aplicada a este problema, indicando aspectos referentes à arquitetura da rede, bem como à metodologia como um todo (e.g. tratamento dos dados, treinamento do modelo etc.).
+
+    \subsection{Resposta}
+
 
 \section{Questão 6}
 
@@ -259,6 +291,11 @@ Tendo em mente a teoria subjacente às máquinas de vetores-suporte (SVMs, do in
         \item (0,3) Qual é a dimensão do espaço original dos dados?
         \item (0,7) Caso se busque uma preservação de ao menos 90\% do conteúdo energético dos dados, qual é o menor número possível de componentes principais empregadas? Justifique.
     \end{enumerate}
+
+    \subsection{Resposta \textbf{(a)}}
+
+
+    \subsection{Resposta \textbf{(b)}}
 
 
 \section{Questão 7}
@@ -285,6 +322,12 @@ Tendo em mente a teoria subjacente às máquinas de vetores-suporte (SVMs, do in
         \item (0,6) Determine o valor da acurácia balanceada atingida pela CNN, mostrando explicitamente os valores das métricas intermediárias necessárias para o cálculo.
     \end{enumerate}
 
+    \subsection{Resposta \textbf{(a)}}
+
+
+    \subsection{Resposta \textbf{(b)}}
+
+
 \section{Questão 8}
 
     \begin{enumerate}[(a)]
@@ -292,6 +335,10 @@ Tendo em mente a teoria subjacente às máquinas de vetores-suporte (SVMs, do in
         \item (0,6) De que maneira um transformer consegue aproveitar possíveis interdependências de curto e longo prazo em uma sequência de entrada apesar de não ter recorrência?
     \end{enumerate}
 
+    \subsection{Resposta \textbf{(a)}}
+
+
+    \subsection{Resposta \textbf{(b)}}
 
 
 %% \label{}
