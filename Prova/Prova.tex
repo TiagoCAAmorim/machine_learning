@@ -273,6 +273,38 @@
 
     \subsection{Resposta}
 
+        \noindent \textbf{Tratamento dos Dados}
+
+        Os dados de entrada são imagens 200 x 200 em escala de cinza, logo podem ser representadas por uma matriz de 200 por 200 de números reais (ou inteiros). Uma operação opcional, mas que usualmente tem um efeito positivo é fazer a normalização dos dados de entrada. Uma opção é normalizar os valores entre 0 e 1.
+
+        Uma etapa opcional é de incrementar a base de dados através do processo de \emph{data augmentation}. Novas amostras podem ser geradas a partir dos dados existentes. Variações das imagens originais podem ser gerada aplicando operações de rotação, translação, zoom, inversão (\emph{flip}), entre outros. As modificações apropriadas dependem das imagens da base de dados (eg.: girar em 180 graus uma imagem transversal de ressonância magnética pode não fazer sentido, pois todas tem a cabeça virada para a parte superior da imagem).
+
+        Os dados das classes precisam ser codificados em um vetor \emph{one-hot} de tamanho 4, em que cada posição está associada a uma das classes. Por exemplo, o vetor associado a uma amostra classificada na classe glioma tem a forma $[1,0,0,0]$.
+
+        Para utilizar estes dados de imagens em uma rede MLP temos primeiro que redimensionar cada matriz para um vetor (\emph{flatten}). Neste exemplo teremos vetores de $40\,000$ números reais.
+
+        \noindent \textbf{Arquitetura da Rede}
+
+        A camada de entrada da rede recebe os $40\,000$ valores de entrada de cada amostra. Cada neurônio da camada de entrada é associado a uma das posições do vetor de entrada, e recebe o respectivo valor da amostra. Logo, temos $40\,000$ neurônios. Não há pesos a serem ajustados nesta camada.
+
+        A camada seguinte é a camada intermediária, onde teremos $n$ neurônios. Nesta camada densa cada neurônio estará conectado a todos os neurônios da camada anterior. Desta forma esta camada tem tem $40\,001n$ pesos a serem ajustados (para cada neurônio são $40\,000$ pesos que multiplicam os valores dos neurônios da camada de entrada e um peso associado ao \emph{bias}). Aos resultados destas somas ponderadas em cada neurônio é usualmente aplicada uma função não-linear (\emph{relu}, \emph{sigmóide}, \emph{tanh} etc.). Se não for aplicada uma função não-linear, a rede terá uma menor capacidade de resolver o problema proposto, pois só conseguirá encontrar relações lineares.
+
+        A camada de saída é composta por 4 neurônios, um associado a cada classe. Cada neurônio se conecta a todos os $n$ neurônios da camada intermediária. Desta forma esta camada tem $3 (n+1)$ pesos ajustáveis. Ao resultado da soma ponderada é aplicada a função \emph{softmax}, que irá dar uma ideia de probabilidade associada a cada classe.
+
+        \noindent \textbf{Treinamento do Modelo}
+
+        Para o treinamento do modelo é uma boa prática separar os dados disponíveis entre treino, validação e teste. Os dados de treino serão efetivamente utilizados para controlar o processo de ajuste dos pesos da rede. Os dados de validação servem para acompanhar o treinamento da rede e evitar \emph{overfitting}, mas não são utilizados para guiar o algoritmo de ajuste. Os dados de teste são apresentados ao modelo apenas no final do processo de ajuste, servindo de indicador da qualidade da rede.
+
+        Para o ajuste dos pesos são usualmente utilizados algoritmos baseados no gradiente da função de perda. Este algoritmos utilizam o gradiente para indicar a direção em que devem ser modificados os valores dos pesos de forma a minimizar a função de perda. A direção de minimização da função de perda é a direção contrária ao gradiente. O passo a ser dado pelo algoritmo de otimização é usualmente definido pelo usuário. Algoritmos de segunda ordem (com cálculo, ou aproximação, da Hessiana) conseguem uma estimativa da direção e do passo a ser dado, mas são menos comuns.
+
+        O gradiente é calculado por retro-propagação (\emph{backpropagation}) das derivadas. Uma amostra passa pela rede, fazendos os cálculos até o final. A retro-propagação começa do final do cálculo e vai retornando até o início da rede, calculando as derivadas associadas a cada peso da rede.
+
+        Para problemas de classificação a função de perde utilizada é normalmente a entropia cruzada. A minimização da entropia cruzada equivale a maximizar a verossimilhança (maximiza as probabilidades associadas às classes corretas de cada amostra dos dados de treino).
+
+        A estrutura geral dos algoritmos de otimização utilizados é a mesma. É apresentado um conjunto de dados de treino (o número de amostras por \emph{batch} pode variar de um a todas as amostras) e a média dos gradientes associados a cada amostra define a direção de alteração dos pesos. O tamanho do passo é informado pelo usuário (diretamente ou indiretamente). Após todos os dados de treino terem sido apresentados à rede, considera-se que acabou esta \textbf{época}. Ao final da época é feita uma avaliação da rede com os dados de validação. O processo de ajuste dos pesos é repetido até que algum critério de parada é atingido (número máximo de épocas, valor mínimo da função de perda, valor mínimo da redução da função de perda entre épocas, não melhora da função de perda com os dados de validação após um determinado número de épocas etc.).
+
+        Ao final do treino são aplicados os dados de teste à rede ajustada, e as métricas de interesse (\emph{f1-score}, acurácia balanceada etc.) são calculadas e avaliadas.
+
 
 \section{Questão 6}
 
@@ -299,7 +331,7 @@
 
     \subsection{Resposta \textbf{(a)}}
 
-        Dado que a matriz de autocorrelação tem posto completro, e que a matriz de autocorrelação é aproximadamente a média dos produtos externos dos dados de entrada, o número de autovalores coincide com a dimensão do espaço original: 8.
+        Assumindo uma matriz de autocorrelação de posto completo, e dado que a matriz de autocorrelação é aproximada pela média dos produtos externos dos dados de entrada, o número de autovalores coincide com a dimensão do espaço original: 8. O caso mais geral é que a dimensão do espaço original é ao menos 8.
 
     \subsection{Resposta \textbf{(b)}}
 
