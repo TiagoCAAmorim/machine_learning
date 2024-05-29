@@ -386,7 +386,6 @@
                 Catarata & 100 & 80 & 0.556 \\
                 \midrule
                          & \multicolumn{2}{r}{\textbf{Média}} & 0.711 \\
-
                 \bottomrule
             \end{tabular}
         \end{table}
@@ -399,10 +398,13 @@
     \end{enumerate}
 
     \subsection{Resposta \textbf{(a)}}
+        O mecanismo de auto-atenção de um transformer ajusta a posição de cada elemento no espaço latente em função de todos os elementos da sequência. Os dados de entrada são os elementos em algum espaço latente (eg.: a localização de cada palavra em um espaço semântico). É montada uma matriz de auto-correlação calculando o produto interno de todos os possíveis pares de elementos (inclusive de cada elemento com ele mesmo). Estes produtos internos dão uma ideia do grau de correlação entre os elementos. Cada elemento é \emph{reescrito} como uma combinação linear convexa de todos os elementos ponderada pelos produtos internos calculados (os produtos internos passam por uma \emph{softmax} antes de multiplicar os elementos). Esta transformação acaba por mudar a posição de cada elemento em função do seu grau de correlação com os demais elementos da sequência(eg.: muda o sentido semântico de cada palavra em função das palavras que compõem a frase), criando uma ideia de contexto para os elementos da sequência.
 
+        A este mecanismo podem ser adicionadas matrizes que \emph{ajustam} as posições de cada um dos elementos da sequência antes em cada operação. Uma matriz pode multiplicar os elementos que entram no primeiro termo de cada produto interno ($M_{query}$), outra o elemento que entra no segundo termo do produto interno ($M_{key}$) e uma terceira multiplica cada elemento que será utilizado na combinação convexa ($M_{value}$). Desta forma se dá mais flexibilidade à camada transformer para que busque representações alternativas da sequência (eg.: considerar uma frase como uma ironia ou uma afirmação).
 
     \subsection{Resposta \textbf{(b)}}
 
+        O \emph{transformer} é um mecanismo do tipo vec2vec, de forma que recebe como entrada um vetor de elementos, e é perdida a informação de posição que uma sequência carrega. É preciso adicionar aos dados de entrada (já em algum espaço latente) um termo de codificação posicional. Cada elemento recebe um código único que representa a sua posição dentro da sequência original, que foi transformada em vetor. Na proposta original dos \emph{transformers} são utilizados os valores de uma família de senoides para codificar estas posições.
 
 %% \label{}
 
