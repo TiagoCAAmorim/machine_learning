@@ -252,7 +252,9 @@
 
     \subsection{Resposta \textbf{(b)}}
 
-        Um classificador de máxima margem se apoia nos dados mais \emph{difíceis} de serem classificados (mais próximos da outra classe).
+        A ideia da regularização é de reduzir a flexibilidade do modelo utilizado, fazendo uma troca entre viés e variância. O objetivo é que um modelo mais \emph{bem comportado} consiga generalizar melhor que um modelo mais flexível, e que possa sofrer com \emph{overfitting}.
+
+        Entre duas classes linearmente separáveis é possível definir infinitos hiperplanos classificadores. A ideia do SVM é de reduzir a liberdade deste hisperplano, usando como critério a máxima margem, com o intuito de ter ter um classificador que generalize melhor. Um classificador de máxima margem se apoia nos dados mais \emph{difíceis} de serem classificados (mais próximos da outra classe), de forma que aumenta a chance de que novos dados que venham a se aproximar ainda mais da outra classe (mais \emph{difícieis} de classificar que os dados de treinados) sejam corretamente classificados.
 
 \section{Questão 4}
 
