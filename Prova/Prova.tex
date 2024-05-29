@@ -230,10 +230,10 @@
     \subsection{Resposta}
 
     \begin{itemize}
-        \item \textbf{Mapa de características}:
-        \item \textbf{Neurônio}:
-        \item \textbf{Campo receptivo}:
-        \item \textbf{Compartilhamento de pesos}:
+        \item \textbf{Mapa de características}: Uma rede com camadas convolucionais funciona como uma série de filtros não-lineares, em cascata (no caso de mais de uma camada convolucional na rede). O que se entende como mapa de características são os resultados gerados por cada uma das camadas convolucionais. O ajuste dos pesos dos filtros objetivam encontrar características nos dados de entrada que sejam úteis para o problema posto.
+        \item \textbf{Neurônio}: O neurônio é a unidade básica de compução de uma rede neural. Em uma camada densa cada neurônio se conecta a todos os dados de entrada. Em uma camada convolucional o neurônio de conecta a um número limitado de dados de entrada, e depois \emph{passeia} pelos dados (operação de convolução). Cada \emph{canal} na saída de uma camada convolucional é o resultado da aplicação de um mesmo neurônio seguidamente a porções dos dados de entrada.
+        \item \textbf{Campo receptivo}: Uma camada densa trabalha \emph{observando} toda a informação de uma única vez, enquanto que uma camada convolucional \emph{observa} os dados de entrada em pequenas porções. Cada saída da camada convolucional é o resultado da aplicação do filtro (\emph{kernel}) em uma porção limitada dos dados. Ao ter camadas convolucionais seguidas o efeito é que cada saída das camadas mais profundas são o resultado da composição destas regiões em cascata. O campo receptivo de uma camada é o resultado desta composição de \emph{lentes} de volta para o dado de entrada, onde as saídas de camadas mais profundas são o resultado de regiões cada vez maiores dos dados de entrada.
+        \item \textbf{Compartilhamento de pesos}: Uma camada convolucional pode ser entendida como uma camada densa em que os pesos são compartilhados entre os diferentes neurônios. As operações envolvidas são as mesmas de uma camada densa, mas é como se cada neurônio tivesse pesos ajustáveis (e não-nulos) apenas para as conexões a um número limitado de dados de entrada. Além disso os pesos utilizados são os mesmos entre estes diferentes neurônios. Este mecanismo ajuda a entender a grande diferença entre o número de pesos ajustáveis de camadas densas e camadas convolucionais.
     \end{itemize}
 
 
