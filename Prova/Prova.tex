@@ -305,7 +305,7 @@
 
         A parcela de variância associada a cada componente principal é dada pela razão entre o valor do autovalor associado e a soma de todos os autovalores. Para preservar ao menos 90\% da variância observada nos dados (conteúdo energético) precisamos usar ao menos os 4 componentes principais associados aos 4 maiores autovalores.
 
-        \begin{table}[h]
+        \begin{table}[H]
             \centering
             \begin{tabular}{c c c c}
                 \toprule
@@ -328,12 +328,11 @@
 
     Considere que uma CNN tenha sido aplicada à classificação de imagens de retina em três classes: normal, glaucoma e catarata. Na etapa de teste, a seguinte matriz de confusão foi obtida:
 
-    \begin{table}[h]
+    \begin{table}[H]
         \centering
         \begin{tabular}{l c c c}
             \toprule
              & \multicolumn{3}{c}{\textbf{Classe estimada}} \\
-            %  & \textbf{Classe} & \textbf{estimada} & \\
             \textbf{Classe real} & \textbf{Normal} & \textbf{Glaucoma} & \textbf{Catarata} \\
             \midrule
             Normal & 410 & 15 & 25 \\
@@ -350,9 +349,47 @@
 
     \subsection{Resposta \textbf{(a)}}
 
+        Para encontrar os valores considerando Glaucoma como classe positiva temos que agregar os valores das demais classes:
+
+        \begin{enumerate}
+            \item O número de verdadeiros positivos permanece o mesmo.
+            \item A coluna de classe positiva estimada tem o mesmo total que a coluna de Glaucoma estimado da tabela anterior.
+            \item A linha de classe positiva real tem o mesmo total que a linha de Glaucoma real da tabela anterior.
+            \item O número de negativos verdadeiros é a soma dos termos fora da linha ou coluna Glaucoma da tabela anterior.
+        \end{enumerate}
+
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{l c c}
+                \toprule
+                & \multicolumn{2}{c}{\textbf{Classe estimada}} \\
+                \textbf{Classe real} & \textbf{Positiva} & \textbf{Negativa} \\
+                \midrule
+                Positiva & TP=100 & FN=50 \\
+                Negativa & FP=40 & TN=590 \\
+                \bottomrule
+            \end{tabular}
+        \end{table}
 
     \subsection{Resposta \textbf{(b)}}
 
+        A acurácia balanceada é a média do \emph{recall} para cada classe. E \emph{recall} é a taxa de positivos verdadeiros: $TPR = \frac{TP}{TP+FN}$. O cálculo dos valores de TP e FN de cada classe seguem a lógica apresentada no item anterior. A acurácia balanceada da CNN é \textbf{0.711}.
+
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{l c c c}
+                \toprule
+                \textbf{Classe} & \textbf{TP} & \textbf{FN} & \textbf{\emph{Recall}} \\
+                \midrule
+                Normal   & 410 & 40 & 0.911 \\
+                Glaucoma & 100 & 50 & 0.667 \\
+                Catarata & 100 & 80 & 0.556 \\
+                \midrule
+                         & \multicolumn{2}{r}{\textbf{Média}} & 0.711 \\
+
+                \bottomrule
+            \end{tabular}
+        \end{table}
 
 \section{Questão 8}
 
