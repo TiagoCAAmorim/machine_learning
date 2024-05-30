@@ -12,3 +12,7 @@ Logistic regression and kNN on sensor data classification.
 ## Lista03: [Neural Net Classification](Lista03/Report/Lista03.pdf)
 
 Neural networks (MLP, CNN, ResNet-_like_) for image classification.
+
+## Projeto: [Recurrent Convolutional Regression](Projeto/Proposta/Porposta.pdf)
+
+Neural network with recurrent convolutional layers to predict the behavior of grid cells in a one time-step porous-media simulation.
