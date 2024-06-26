@@ -215,7 +215,7 @@
 
 \section{Motivação}
 
-    O método das diferenças finitas é utilizado para resolver diferentes problemas físicos que podem ser descritos como equações diferenciais. O método se baseia na aproximação das derivadas por diferenças finitas (Exemplos nas equações \ref{eq:diffin}). O domínio espaço-temporal é discretizado e a solução das equações diferenciais é aproximada nos nós desta malha \cite{causon2010introductory}. O problema então é transformado em uma série de equações não-lineares, que usualmente são resolvidas por métodos numéricos, como o método de Newton-Raphson \cite{burden2016analise}.
+    O método das diferenças finitas é utilizado para resolver diferentes problemas físicos que podem ser descritos como equações diferenciais. O método se baseia na aproximação das derivadas por diferenças finitas (exemplos em \ref{eq:diffin}). O domínio espaço-temporal é discretizado e a solução das equações diferenciais é aproximada nos nós desta malha \cite{causon2010introductory}. O problema então é transformado em uma série de equações não-lineares, que usualmente são resolvidas por métodos numéricos, como o método de Newton-Raphson \cite{burden2016analise}.
 
     \begin{subequations}
         \begin{align}
@@ -225,7 +225,7 @@
         \label{eq:diffin}
     \end{subequations}
 
-    É usual utilizar aproximações de derivada que utilizam os valores da função do nó e seus vizinhos diretos. Em problemas bidimensionais com malhas regulares (Figura \ref{fig:esquematico}) esta escolha leva a sistemas de equações com matrizes pentadiagonais (\ref{eq:sistema}). Cada equação não-linear tem termos associados a um dos nós (i,j) e seus quatro vizinhos: (i-1,j), (i+1,j), (i,j-1) e (i,j+1). A resolução numérica deste sistema de equações não-lineares usualmente está associada a métodos iterativos, em que novas equações lineares são resolvidas. Desta forma, a resolução do problema original está associada à solução de um significativo número de sistemas de equações lineares com matriz pentadiagonal.
+    É usual utilizar aproximações de derivada que utilizam os valores da função do nó e seus vizinhos diretos. Em problemas bidimensionais com malhas regulares (Figura \ref{fig:esquematico}) esta escolha leva a sistemas de equações com matrizes pentadiagonais (exemplo para uma malha $n_i$,$n_j$ em \ref{eq:sistema}). Cada equação não-linear tem termos associados a um dos nós (i,j) e seus quatro vizinhos: (i-1,j), (i+1,j), (i,j-1) e (i,j+1). A resolução numérica deste sistema de equações não-lineares usualmente está associada a métodos iterativos, em que novas equações lineares são resolvidas. Desta forma, a resolução do problema original está associada à solução de um significativo número de sistemas de equações lineares com matriz pentadiagonal.
 
     A proposta deste trabalho é avaliar a possibilidade de utilizar uma rede convolucional para resolver este tipo de sistema de equações lineares.
 
@@ -251,34 +251,37 @@
 
     \begin{figure*}
         \begin{equation}
+            \overbrace{
             \begin{bmatrix}
-                a_{0,1}    & a_{1,1}    & 0       & \ldots  & 0      & a_{m,1}   & 0       &         & \ldots    &  0      \\
-                a_{-1,2}   & a_{0,2}    & a_{1,2} & 0       & \ldots & 0         & a_{m,2} & 0       & \ldots    &  0      \\
-                0          & a_{-1,3}   & a_{0,3} & a_{1,3} & 0      & \ldots    & 0       & a_{m,3} & \ldots    & 0       \\
+                a^0_1    & a^1_1    & 0       & \ldots  & 0      & a^{n_i}_1   & 0       &         & \ldots    &  0      \\
+                a^{-1}_2   & a^0_2    & a^1_2 & 0       & \ldots & 0         & a^{n_i}_2 & 0       & \ldots    &  0      \\
+                0          & a^{-1}_3   & a^0_3 & a^1_3 & 0      & \ldots    & 0       & a^{n_i}_3 & \ldots    & 0       \\
                 \vdots     &            & \ddots  & \ddots  & \ddots &           &         &         & \ddots    & \vdots  \\
-                0          & \ldots     & 0      & a_{-m,n-2}  & 0       & \ldots  & a_{-1,n-2}  & a_{0,n-2} & a_{1,n-2} & 0 \\
-                0          & \ldots     &         & 0      & a_{-m,n-1}  & 0       & \ldots  & a_{-1,n-1}  & a_{0,n-1} & a_{1,n-1} \\
-                0          & \ldots     &         &         & 0      & a_{-m,n}  & 0       & \ldots  & a_{-1,n}  & a_{0,n} \\
-            \end{bmatrix}
+                0          & \ldots     & 0      & a^{-n_i}_{n_in_j-2}  & 0       & \ldots  & a^{-1}_{n_in_j-2}  & a^0_{n_in_j-2} & a^1_{n_in_j-2} & 0 \\
+                0          & \ldots     &         & 0      & a^{-n_i}_{n_in_j-1}  & 0       & \ldots  & a^{-1}_{n_in_j-1}  & a^0_{n_in_j-1} & a^1_{n_in_j-1} \\
+                0          & \ldots     &         &         & 0      & a^{-n_i}_{n_in_j}  & 0       & \ldots  & a^{-1}_{n_in_j}  & a^0_{n_in_j} \\
+            \end{bmatrix}}^\textbf{A}
+            \overbrace{
             \begin{bmatrix}
                 x_1 \\
                 x_2 \\
                 x_3 \\
                 \vdots \\
-                x_{n-2} \\
-                x_{n-1} \\
-                x_{n} \\
-            \end{bmatrix}
+                x_{n_in_j-2} \\
+                x_{n_in_j-1} \\
+                x_{n_in_j} \\
+            \end{bmatrix}}^\textbf{x}
             =
+            \overbrace{
             \begin{bmatrix}
                 b_1 \\
                 b_2 \\
                 b_3 \\
                 \vdots \\
-                b_{n-2} \\
-                b_{n-1} \\
-                b_{n} \\
-            \end{bmatrix}
+                b_{n_in_j-2} \\
+                b_{n_in_j-1} \\
+                b_{n_in_j} \\
+            \end{bmatrix}}^\textbf{b}
             \label{eq:sistema}
         \end{equation}
     \end{figure*}
@@ -294,16 +297,25 @@
 
 \section{Codificação do Sistema Linear}
 
+    O objetivo da rede é resolver um problema do tipo $\textbf{Ax}=\textbf{b}$. Cada amostra da base de dados são os valores das diagonais da matriz $\textbf{A}$ e o vetor $\textbf{b}$, e a saída pretendida são os valores de $\textbf{x}$. Para simplificar a quantidade de dados a serem repassados à rede, é possível dividir as linhas da matriz $\textbf{A}$ e o vetor $\textbf{b}$ pelos valores da diagonal principal. Esta opração não muda o $\textbf{x}$ que resolve o sistema. Desta forma que na nova matriz pentadiagonal todos os valores da diagonal principal são iguais à unidade.
+
+    Os dados são organizados em forma de tensor 2D, à semelhança de uma imagem com ($n_i$,$n_j$) pixels. Seguindo a notação utilizada em \ref{eq:sistema}, os \emph{canais} desta imagem correspondem aos valores das diagonais $-n_i$, $-1$, $1$ e $n_i$, e os valores de $\textbf{b}$. Cada um destes vetores é ajustado para que os termos fiquem na posição (i,j) correspondente ao nó associado ao valor.
+
+    A saída pretendida, $\textbf{x}$, também é formatada como um tensor 2D (com apenas um canal). Desta forma, a rede neural recebe uma \emph{imagem} ($n_i$,$n_j$) com 5 canais e deve gerar uma imagem de mesmo tamanho com 1 canal.
 
 \section{Arquitetura da Rede Convolucional}
 
+    A arquitetura da rede foi construída de forma a utilizar apenas camadas que
+
+    A rede neural é treinada com amostras geradas aleatoriamente. A cada solicitação de uma nova amostra são gerados a matrix $\textbf{A}$ e o vetor $\textbf{x}$. O vetor $\textbf{b}$ é a multiplicação matricial dos dois primeiros termos. Em seguida os dados são reoganizados em forma de tensores.
 
 \section{Resultados}
 
 
 
-    \subsection{Rede Convolucional \emph{Simples}}
 
+
+    Todo o código foi desenvolvido em Pytorch, e está disponível em \href{https://github.com/TiagoCAAmorim/machine\_learning/blob/main/Projeto/solve_lin_eq.ipynb}{https://github.com/TiagoCAAmorim/machine \_learning/blob/main/Projeto/solve\_lin\_eq.ipynb}.
 
 
     \section{Conclusão}
