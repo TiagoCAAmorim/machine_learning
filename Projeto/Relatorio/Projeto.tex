@@ -297,17 +297,42 @@
 
 \section{Codificação do Sistema Linear}
 
-    O objetivo da rede é resolver um problema do tipo $\textbf{Ax}=\textbf{b}$. Cada amostra da base de dados são os valores das diagonais da matriz $\textbf{A}$ e o vetor $\textbf{b}$, e a saída pretendida são os valores de $\textbf{x}$. Para simplificar a quantidade de dados a serem repassados à rede, é possível dividir as linhas da matriz $\textbf{A}$ e o vetor $\textbf{b}$ pelos valores da diagonal principal. Esta opração não muda o $\textbf{x}$ que resolve o sistema. Desta forma que na nova matriz pentadiagonal todos os valores da diagonal principal são iguais à unidade.
+    O objetivo da rede é resolver um problema do tipo $\textbf{Ax}=\textbf{b}$. Cada amostra da base de dados são os valores das diagonais da matriz $\textbf{A}$ e o vetor $\textbf{b}$, e a saída pretendida são os valores de $\textbf{x}$. Para simplificar a quantidade de dados a serem repassados à rede, é possível dividir as linhas da matriz $\textbf{A}$ e o vetor $\textbf{b}$ pelos valores da diagonal principal. Esta operação não muda o $\textbf{x}$ que resolve o sistema. Desta forma na nova matriz pentadiagonal todos os valores da diagonal principal são iguais à unidade.
 
     Os dados são organizados em forma de tensor 2D, à semelhança de uma imagem com ($n_i$,$n_j$) pixels. Seguindo a notação utilizada em \ref{eq:sistema}, os \emph{canais} desta imagem correspondem aos valores das diagonais $-n_i$, $-1$, $1$ e $n_i$, e os valores de $\textbf{b}$. Cada um destes vetores é ajustado para que os termos fiquem na posição (i,j) correspondente ao nó associado ao valor.
 
     A saída pretendida, $\textbf{x}$, também é formatada como um tensor 2D (com apenas um canal). Desta forma, a rede neural recebe uma \emph{imagem} ($n_i$,$n_j$) com 5 canais e deve gerar uma imagem de mesmo tamanho com 1 canal.
 
-\section{Arquitetura da Rede Convolucional}
+\section{Arquitetura e Treinamento da Rede Convolucional}
 
-    A arquitetura da rede foi construída de forma a utilizar apenas camadas que
+    Como as \emph{resolução} dos dados de entrada e saída de rede são as mesmas, optou-se por utilizar apenas camadas que mantém este tamanho. A rede é composta por (Figura \ref{fig:arquitetura}):
+
+    \begin{enumerate}
+        \item Camada convolucional com \emph{kernel}=1x1: passa de 5 para $n_{lat}$ o número de canais.
+        \item $N$ camadas convolucionais com \emph{kernel}=3x3 e \emph{padding}=1.
+        \item Camada convolucional com \emph{kernel}=1x1: passa de $n_{lat}$ para um canal.
+    \end{enumerate}
+
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[width=0.95\columnwidth, trim={0cm 6cm 2cm 0cm}, clip]{./fig/NN.png}
+        \caption{Arquitetura geral da rede neural proposta.}\label{fig:arquitetura}
+    \end{figure}
+
+    Existe
 
     A rede neural é treinada com amostras geradas aleatoriamente. A cada solicitação de uma nova amostra são gerados a matrix $\textbf{A}$ e o vetor $\textbf{x}$. O vetor $\textbf{b}$ é a multiplicação matricial dos dois primeiros termos. Em seguida os dados são reoganizados em forma de tensores.
+
+    Para tornar a rede mais generalizável, diferentes distribuições probabilísticas são empregadas na geração de $\textbf{A}$ e $\textbf{x}$. Também é aplicada uma constante de escala aleatória à $\textbf{A}$, variando de $10^{-3}$ a $10^3$. Não é aplicada uma escala a $\textbf{x}$ para que a função de erro seja comparável entre as diferentes amostras.
+
+    O treinamento da rede é feito com o algoritmo Adam. O passo de treinamento é reduzido à metade a cada 10 épocas sem redução no valor da função de perda dos dados de validação. A otimização é terminada se o valor da função de perda dos dados de validação não melhorar após 35 épocas.
+    A função de perda é o RMSE (Equação \ref{eq:rmse}).
+
+    \begin{equation}
+        RMSE = \sqrt{\frac{1}{n_in_j}\sum_{i=1}^{n_i} \sum_{j=1}^{n_j} (y_{i,j} - \hat{y}(x_{i,j}))^2} \label{eq:rmse}
+    \end{equation}
+
+
 
 \section{Resultados}
 
