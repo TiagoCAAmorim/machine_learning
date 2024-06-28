@@ -211,11 +211,7 @@
 %% main text
 \section{Introdução}
 
-
-
-\section{Motivação}
-
-    O método das diferenças finitas é utilizado para resolver diferentes problemas físicos que podem ser descritos como equações diferenciais. O método se baseia na aproximação das derivadas por diferenças finitas (exemplos em \ref{eq:diffin}). O domínio espaço-temporal é discretizado e a solução das equações diferenciais é aproximada nos nós desta malha \cite{causon2010introductory}. O problema então é transformado em uma série de equações não-lineares, que usualmente são resolvidas por métodos numéricos, como o método de Newton-Raphson \cite{burden2016analise}.
+     O método das diferenças finitas é utilizado para resolver diferentes problemas físicos que podem ser descritos como equações diferenciais. O método se baseia na aproximação das derivadas por diferenças finitas (exemplos em \ref{eq:diffin}). O domínio espaço-temporal é discretizado e a solução das equações diferenciais é aproximada nos nós desta malha \cite{causon2010introductory}. O problema então é transformado em uma série de equações não-lineares, que usualmente são resolvidas por métodos numéricos, como o método de Newton-Raphson \cite{burden2016analise}.
 
     \begin{subequations}
         \begin{align}
@@ -287,23 +283,23 @@
 
 \section{Trabalhos Correlatos}
 
-    Não foram encontrados muitos trabalhos com foco na resolução de sistemas de equações lineares com redes neurais. Duas formas distintas de resolução do problema foram propostas. A primeira vertente é resolver o sistema de equações lineares junto com o treinamento da rede (\cite{cichocki1992neural}). Uma aplicação interessante desta proposta é o de resolver sistema de grande dimensão, que possivelmente não cabem na memória disponível, e usar a rede para aprender um mapeamento que aproxima a resposta (\cite{gu2023deep}).
+    Não foram encontrados muitos trabalhos com foco na resolução de sistemas de equações lineares com redes neurais. Dentre os trabalhos encontrados, duas formas distintas de resolução do problema foram propostas. A primeira vertente é resolver o sistema de equações lineares junto com o treinamento da rede \cite{cichocki1992neural}. Uma aplicação interessante desta proposta é o de resolver sistemas de grande dimensão, que possivelmente não cabem na memória disponível, e usar a rede para aprender um mapeamento que aproxima a resposta \cite{gu2023deep}.
 
-    Uma segunda vertente é a de treinar uma rede neural com base em vários exemplos de sistemas de equações a resolver. A rede treinada é utilizada para resolver novos sistemas de equações. Uma proposta focou na solução de sistemas tridiagonais (\cite{jiang2023neural}), utilizando uma série de camadas densas seguidas por conexões residuais. Um outro trabalho (\cite{kontolati2024learning}) foca na solução de problemas físicos associados a equações diferenciais. Este trabalho tenta primeiro encontrar uma representação densa dos dados de entrada por meio de uma rede \emph{autoenconder}. Posteriormente a representação densa de cada amostra passa por uma outra rede neural que busca resolver o problema.
+    Uma segunda vertente é a de treinar uma rede neural com base em vários exemplos de sistemas de equações a resolver. A rede treinada é utilizada para resolver novos sistemas de equações. Uma proposta focou na solução de sistemas tridiagonais \cite{jiang2023neural}, utilizando uma série de camadas densas seguidas por conexões residuais. Um outro trabalho \cite{kontolati2024learning} foca na solução de problemas físicos associados a equações diferenciais. Este trabalho tenta primeiro encontrar uma representação densa dos dados de entrada por meio de uma rede \emph{autoenconder}. Posteriormente a representação densa de cada amostra passa por uma outra rede neural que busca resolver o problema.
 
-    A proposta estudada neste projeto segue a segunda vertente. É feita a opção de utilizar camadas convolucionais para que a arquitetura da rede seja agnóstica à discretização do problema (tamanho da malha).
+    A proposta estudada neste projeto segue a segunda vertente. Ao contrário das demais aplicações, onde foram utilizadas camadas densas, foi feita a opção de utilizar camadas convolucionais para que a arquitetura da rede seja agnóstica à discretização do problema (tamanho da malha).
 
 \section{Codificação do Sistema Linear}
 
-    O objetivo da rede é resolver um problema do tipo $\textbf{Ax}=\textbf{b}$. Cada amostra da base de dados são os valores das diagonais da matriz $\textbf{A}$ e o vetor $\textbf{b}$, e a saída pretendida são os valores de $\textbf{x}$. Para simplificar a quantidade de dados a serem repassados à rede, é possível dividir as linhas da matriz $\textbf{A}$ e o vetor $\textbf{b}$ pelos valores da diagonal principal. Esta operação não muda o $\textbf{x}$ que resolve o sistema. Desta forma na nova matriz pentadiagonal todos os valores da diagonal principal são iguais à unidade.
+    O objetivo da rede é resolver um problema do tipo $\textbf{Ax}=\textbf{b}$. Cada amostra da base de dados são os valores das diagonais da matriz $\textbf{A}$ e o vetor $\textbf{b}$, e a saída pretendida são os valores de $\textbf{x}$. É possível dividir as linhas da matriz $\textbf{A}$ e o vetor $\textbf{b}$ pelos valores da diagonal principal de $\textbf{A}$. Esta operação não muda o vetor $\textbf{x}$ que resolve o sistema. Desta forma na nova matriz pentadiagonal todos os valores da diagonal principal são iguais à unidade. Como todas amostras tem estes mesmos valores, não é necessário apresentar estes valores à rede.
 
-    Os dados são organizados em forma de tensor 2D, à semelhança de uma imagem com ($n_i$,$n_j$) pixels. Seguindo a notação utilizada em \ref{eq:sistema}, os \emph{canais} desta imagem correspondem aos valores das diagonais $-n_i$, $-1$, $1$ e $n_i$, e os valores de $\textbf{b}$. Cada um destes vetores é ajustado para que os termos fiquem na posição (i,j) correspondente ao nó associado ao valor.
+    Os dados são organizados em forma de tensor 2D, à semelhança de uma imagem com ($n_i$,$n_j$) pixels. Seguindo a notação utilizada em \ref{eq:sistema}, os \emph{canais} desta imagem correspondem aos valores das diagonais $-n_i$, $-1$, $1$ e $n_i$, e os valores de $\textbf{b}$. Cada um destes vetores é ajustado para que os termos fiquem na posição (i,j) correspondente ao nó associado ao valor. Como as diagonais tem $n_i(n_j-1)$ e $(n_i-1)n_j$ valores, uma linha ou coluna do tensor associado tem valores nulos.
 
-    A saída pretendida, $\textbf{x}$, também é formatada como um tensor 2D (com apenas um canal). Desta forma, a rede neural recebe uma \emph{imagem} ($n_i$,$n_j$) com 5 canais e deve gerar uma imagem de mesmo tamanho com 1 canal.
+    A saída pretendida, o vetor $\textbf{x}$, também é formatada como um tensor 2D. A saída tem apenas um canal. Desta forma, a rede neural recebe uma \emph{imagem} ($n_i$,$n_j$) com 5 canais e deve gerar uma imagem de mesmo tamanho com um canal.
 
 \section{Arquitetura e Treinamento}
 
-    Como as \emph{resolução} dos dados de entrada e saída de rede são as mesmas, optou-se por utilizar apenas camadas que mantém este tamanho. A rede é composta por (Figura \ref{fig:arquitetura}):
+    Como as \emph{resoluções} dos dados de entrada e saída da rede são as mesmas, optou-se por utilizar apenas camadas que mantém este tamanho. A rede é composta por (Figura \ref{fig:arquitetura}):
 
     \begin{enumerate}
         \item Camada convolucional com \emph{kernel}=1x1: passa de 5 para $n_{lat}$ o número de canais (ativação: ReLu).
@@ -317,7 +313,7 @@
         \caption{Arquitetura geral da rede neural proposta.}\label{fig:arquitetura}
     \end{figure}
 
-    A ligação direta entre os dados de entrada e a saída é dos valores do vetor \textbf{b} (último \emph{canal} de cada amostra).
+    A ligação direta entre os dados de entrada e a saída é dos valores do vetor $\textbf{b}$ (último \emph{canal} de cada amostra).
 
     A classe que constrói a rede neural tem diferentes opções de configuração, de forma a poder ser feita uma otimização destes hiperparâmetros. Entre as opções de arquitetura, existe a possibilidade de trocar as camadas convolucionais com \emph{kernel}=3x3 por blocos \textbf{Inception} (Figura \ref{fig:inception}).
 
@@ -329,7 +325,7 @@
 
     A rede neural é treinada com amostras geradas aleatoriamente. A cada solicitação de uma nova amostra são gerados a matrix $\textbf{A}$ e o vetor $\textbf{x}$. O vetor $\textbf{b}$ é a multiplicação matricial dos dois primeiros termos. Em seguida os dados são reoganizados em forma de tensores.
 
-    Para tornar a rede mais generalizável, diferentes distribuições probabilísticas são empregadas na geração de $\textbf{A}$ e $\textbf{x}$, e com todos os valores \emph{aproximadamente} no intervalo $[-2,2]$. A cada época de treinamento são apresentados $10\,000$ amostras, em \emph{batches} de 64. Como a geração das amostras é aleatória, não foi necessário dividir a base de dados em treinamento, validação e teste, pois toda amostra é \emph{inédita} para a rede.
+    Para tornar a rede mais generalizável, diferentes distribuições probabilísticas são empregadas na geração de $\textbf{A}$ e $\textbf{x}$. Todos os valores estão \emph{aproximadamente} no intervalo $[-2,2]$. A cada época de treinamento são apresentadas $10\,000$ amostras, em \emph{batches} de 64. Como a geração das amostras é aleatória, não foi necessário dividir a base de dados em treinamento, validação e teste, pois toda amostra é \emph{inédita} para a rede.
 
     A função de perda é o RMSE (Equação \ref{eq:rmse}). O treinamento da rede é feito com o algoritmo Adam, com taxa de aprendizado inicial de $0.01$. O passo de treinamento é reduzido à metade a cada 10 épocas sem redução no valor da função de perda. A otimização é terminada se o valor da função de perda não melhorar após 35 épocas.
 
@@ -339,14 +335,20 @@
 
 \section{Resultados}
 
-    Foram feitos testes manuais com os hiperparâmetros da rede (Tabela \ref{tab:hiperparam}). Dos testes realizados é possível tecer as seguintes conclusões:
+    Foram feitos testes manuais com os hiperparâmetros da rede (Figura \ref{fig:modelos} e Tabela \ref{tab:hiperparam}). Dos testes realizados é possível tecer as seguintes conclusões:
 
     \begin{itemize}
         \item O incremento no número de blocos intermediários dificulta o treinamento da rede. As ligações diretas foram importantes para facilitar a \emph{transmissão} do gradiente para as camadas mais rasas.
-        \item O incremento no número de canais levou a melhora dos resultados. O contínuo incremento deixou o treinamento da rede instável. O aumento no tamanho do \emph{batch} ajudou na redução das variações na função de perda ao longo do treinamento.
+        \item O incremento no número de canais ($n_{lat}$) levou a melhores resultados. O contínuo incremento deixou o treinamento da rede instável. O aumento no tamanho do \emph{batch} ajudou na redução das variações na função de perda ao longo do treinamento.
         \item O bloco Inception apresentou impacto positivo nos resultados. Comparando com uma camada convolucional de mesmo número de canais, o bloco Inception tem menos pesos ajustáveis e melhor desempeho.
         % \item As ligações diretas \emph{internas} só funcionaram em testes com o bloco Inception, e tiveram impacto positivo.
     \end{itemize}
+
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[width=0.95\columnwidth]{./fig/models.png}
+        \caption{Resultados dos modelos testados por número de pesos.}\label{fig:modelos}
+    \end{figure}
 
     \begin{table}
     \begin{center}
@@ -374,7 +376,7 @@
     \end{center}
     \end{table}
 
-    Para aumentar a capacidade de generalização do modelo \emph{ótimo}, o treinamento incluiu a variação da escala dos valores da matriz \textbf{A} e do vetor{b}. Os valores do vetor \textbf{y} foram mantidos na faixa [-2,2] para que a função de perda seja comparável entre as amostras. O treinamento atingiu o critério de parada após 304 épocas (Figura \ref{fig:loss}).
+    Para aumentar a capacidade de generalização do modelo \emph{ótimo}, o treinamento incluiu a variação da escala dos valores da matriz $\textbf{A}$ e do vetor $\textbf{b}$. A ordem de grandeza dos valores variou entre $0.1$ e $10$. Os valores do vetor $\textbf{y}$ foram mantidos na faixa [-2,2] para que a função de perda seja comparável entre as amostras. O treinamento atingiu o critério de parada após 304 épocas (Figura \ref{fig:loss}).
 
     \begin{figure}[hbt!]
         \centering
@@ -382,24 +384,48 @@
         \caption{Treinamento do modelo \emph{ótimo}.}\label{fig:loss}
     \end{figure}
 
-    O treinamento do modelo foi realizado com amostras de malhas ($5,5$). Os resultados mostram que, mesmo que exista certa deteriorização da qualidade das respostas para malhas com outras configurações, o modelo conseguiu generalizar de modo satisfatório o problema proposto. As figuras de \ref{fig:3x3} a \ref{fig:30x30} mostram exemplos de aplicação do modelo treinado. Os vetores \textbf{$y_{exato}$} e \textbf{$y_{modelo}$} são apresentados como uma série apenas para facilitar a visualização.
+    O treinamento do modelo foi realizado com amostras de malhas ($5,5$). Os resultados mostram que, mesmo que exista certa deteriorização da qualidade das respostas para malhas com outras configurações, o modelo conseguiu generalizar de modo satisfatório o problema proposto (Figura \ref{fig:rmse}). As figuras de \ref{fig:3x3} a \ref{fig:30x30} mostram exemplos de aplicação do modelo treinado\footnote{Exemplos com malhas maiores se encontram no repositório deste projeto: \href{https://github.com/TiagoCAAmorim/machine_learning/blob/main/Projeto/Relatorio/fig}{https://github.com/TiagoCAAmorim/machine\_learning/ blob/main/Projeto/Relatorio/fig}}. Os vetores $\textbf{y}_{exato}$ e $\textbf{y}_{modelo}$ são apresentados como uma série apenas para facilitar a visualização.
 
     \begin{figure}[hbt!]
         \centering
-        \includegraphics[width=0.95\columnwidth]{./fig/3x3.png}
+        \includegraphics[width=0.85\columnwidth]{./fig/RMSE.png}
+        \caption{Resultados do modelo \emph{ótimo} para diferentes tamanhos de malha.}\label{fig:rmse}
+    \end{figure}
+
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[width=0.85\columnwidth]{./fig/3x3.png}
         \caption{Exemplo de uma malha ($3$,$3$).}\label{fig:3x3}
     \end{figure}
 
     \begin{figure}[hbt!]
         \centering
-        \includegraphics[width=0.95\columnwidth]{./fig/5x5.png}
+        \includegraphics[width=0.85\columnwidth]{./fig/5x5.png}
         \caption{Exemplo de uma malha ($5$,$5$).}\label{fig:5x5}
     \end{figure}
 
     \begin{figure}[hbt!]
         \centering
-        \includegraphics[width=0.95\columnwidth]{./fig/10x10.png}
+        \includegraphics[width=0.85\columnwidth]{./fig/5x10.png}
+        \caption{Exemplo de uma malha ($5$,$10$).}\label{fig:5x10}
+    \end{figure}
+
+    % \begin{figure}[hbt!]
+    %     \centering
+    %     \includegraphics[width=0.95\columnwidth]{./fig/10x5.png}
+    %     \caption{Exemplo de uma malha ($10$,$5$).}\label{fig:10x5}
+    % \end{figure}
+
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[width=0.85\columnwidth]{./fig/10x10.png}
         \caption{Exemplo de uma malha ($10$,$10$).}\label{fig:10x10}
+    \end{figure}
+
+    \begin{figure}[hbt!]
+        \centering
+        \includegraphics[width=0.85\columnwidth]{./fig/10x20.png}
+        \caption{Exemplo de uma malha ($10$,$20$).}\label{fig:10x20}
     \end{figure}
 
     \begin{figure}[hbt!]
@@ -420,11 +446,11 @@
 
 \section{Conclusões}
 
-    A proposta inicial para este projeto foi de resolver um passo de tempo de uma simulação de fluxo em meio poroso. Esta tarefa se mostrou desafiadora, pois o que se espera da rede neural é que \emph{aprenda} a resolver um problema que da maneira tradicional envolve montar as matrizes de coeficientes a partir dos dados brutos do problema (porosidades, permeabilidades, viscosidades etc.) e resolver um sistema de equações não-lineares.
+    A proposta inicial para este projeto foi de resolver um passo de tempo de uma simulação de fluxo em meio poroso. Esta tarefa se mostrou desafiadora, pois o que se espera da rede neural é que \emph{aprenda} a resolver um problema que da maneira tradicional envolve montar as matrizes de coeficientes a partir dos dados brutos do problema (porosidades, permeabilidades, viscosidades etc.) e resolver um sistema de equações não-lineares (usualmente por iteração, resolvendo vários sistemas lineares).
 
-    O objetivo deste trabalho não foi o de propor uma nova abordagem para a solução de sistemas pentadiagonais. Existem algoritmos de alta performance que tratam deste tipo de problema \cite{levit1989parallel,ivanov1998parallel,carroll2021batched}. Neste trabalho buscou-se encontrar soluções para um problema mais simples que o inicialmente proposto, e aproveitar as lições aprendidas para a solução da proposta inicial.
+    O objetivo deste trabalho não foi o de propor uma nova abordagem para a solução de sistemas pentadiagonais. Existem algoritmos de alta performance que tratam deste tipo de problema \cite{levit1989parallel,ivanov1998parallel,carroll2021batched}. Neste trabalho buscou-se encontrar soluções para um problema mais simples que o inicialmente proposto, e aproveitar as lições aprendidas para a solução da proposta inicial, que será desenvolvida no futuro.
 
-    O gráfico do treinamento do modelo \emph{ótimo} aponta para uma saturação da função de perda, que pode ser indicativo de a falta de capacidade da própria rede neural de atingir melhores resultados. Testes com redes maiores tiveram problemas de convergência. Uma opção de trabalho futuro é treinar redes maiores a partir de redes menores já treinadas. Este mecanismo funciona como uma espécie de \emph{transfer learning}, em que as novas camadas irão ajudar a melhorar a resposta das camadas já treinadas.
+    O gráfico do treinamento do modelo \emph{ótimo} aponta para uma saturação da função de perda, que pode ser indicativo da falta de capacidade da própria rede neural de atingir melhores resultados. Testes com redes maiores tiveram problemas de convergência. Uma opção de trabalho futuro é treinar redes maiores a partir de redes menores já treinadas. Este mecanismo funciona como uma espécie de \emph{transfer learning}, em que as novas camadas irão ajudar a melhorar a resposta das camadas já treinadas.
 
 
 % \appendix
